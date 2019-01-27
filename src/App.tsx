@@ -22,7 +22,7 @@ class App extends React.Component<{}, State> {
           Add
         </button>
         <Entries />
-        {isAddingEntry && <Input onFinish={() => {}} />}
+        {/* {isAddingEntry && <Input onFinish={() => {})} />} */}
       </>
     )
   }

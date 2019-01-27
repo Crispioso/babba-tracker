@@ -1,11 +1,11 @@
 import * as React from 'react'
-import { DataFunctions } from '../firebase/types'
-import withFirebase from '../firebase/withFirebase'
-import { Items, Units, ItemTypes } from '../../types'
+import withFirebase, { FirebaseFunctionProps } from '../firebase/withFirebase'
+import { Items, Units, ItemTypes, Feed } from '../../types'
 import FeedInput from './FeedInput'
 import uuid from 'uuid/v4'
 
-type Props = DataFunctions & {
+type Props = FirebaseFunctionProps & {
+  feeds: Feed[]
   onFinish: () => any
 }
 

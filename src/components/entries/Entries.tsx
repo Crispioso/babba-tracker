@@ -1,10 +1,9 @@
 import * as React from 'react'
-import withFirebase from '../firebase/withFirebase'
+import withFirebase, { FirebaseFunctionProps } from '../firebase/withFirebase'
 import { Feed, Items } from '../../types'
 import { format } from 'date-fns'
-import { DataFunctions } from '../firebase/types'
 
-type Props = DataFunctions & {
+type Props = FirebaseFunctionProps & {
   feeds: Feed[]
 }
 

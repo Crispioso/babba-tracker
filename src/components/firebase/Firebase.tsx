@@ -1,8 +1,7 @@
-import * as React from 'react'
 import * as app from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/database'
-import { FirebaseConfig, FirebaseContext } from './types'
+import { FirebaseConfig } from './types'
 
 const config: FirebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY || '',
@@ -13,10 +12,11 @@ const config: FirebaseConfig = {
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
 }
 
-const firebaseContext = React.createContext<FirebaseContext | null>(null)
-
 export const firebaseApp = app.initializeApp(config)
 export const firebaseDB = app.database()
 export const firestore = app.firestore()
-export const FirebaseProvider = firebaseContext.Provider
-export const FirebaseConsumer = firebaseContext.Consumer
+
+export interface FirebaseProps {
+  firestore: firebase.firestore.Firestore
+  database: firebase.database.Database
+}
