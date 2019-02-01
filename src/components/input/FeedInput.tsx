@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { Units, ItemTypes } from '../../types'
 
+/*
+
 type Props = {
   ID: string
   onUpdate: (
@@ -102,3 +104,5 @@ export default class FeedInput extends React.Component<Props, State> {
     )
   }
 }
+
+*/

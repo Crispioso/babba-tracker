@@ -1,11 +1,13 @@
 import * as React from 'react'
-import withFirebase, { FirebaseFunctionProps } from '../firebase/withFirebase'
+import withFirebase, {
+  FirebaseFunctionProps,
+  DataKeys,
+  FirebaseData,
+} from '../firebase/withFirebase'
 import { Feed, Items } from '../../types'
 import { format } from 'date-fns'
 
-type Props = FirebaseFunctionProps & {
-  feeds: Feed[]
-}
+type Props = FirebaseFunctionProps & FirebaseData
 
 class Entries extends React.Component<Props, {}> {
   handleUpdateEntry = (item: Items) => {
@@ -28,7 +30,7 @@ class Entries extends React.Component<Props, {}> {
       <>
         <h2>Entries</h2>
         <ul>
-          {this.props.feeds.map(feed => (
+          {this.props.feeds.map((feed: Feed) => (
             <li key={feed.id}>
               {feed.amount} {feed.unit} {this.renderEntryDate(feed)}
               <button
@@ -51,4 +53,4 @@ class Entries extends React.Component<Props, {}> {
   }
 }
 
-export default withFirebase(Entries)
+export default withFirebase()(Entries)

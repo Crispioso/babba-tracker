@@ -3,6 +3,11 @@ import 'firebase/firestore'
 import 'firebase/database'
 import { FirebaseConfig } from './types'
 
+export interface FirebaseProps {
+  firestore: firebase.firestore.Firestore
+  database: firebase.database.Database
+}
+
 const config: FirebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY || '',
   authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
@@ -15,8 +20,3 @@ const config: FirebaseConfig = {
 export const firebaseApp = app.initializeApp(config)
 export const firebaseDB = app.database()
 export const firestore = app.firestore()
-
-export interface FirebaseProps {
-  firestore: firebase.firestore.Firestore
-  database: firebase.database.Database
-}

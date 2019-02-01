@@ -1,8 +1,12 @@
 import * as React from 'react'
-import withFirebase, { FirebaseFunctionProps } from '../firebase/withFirebase'
+import withFirebase, {
+  FirebaseFunctionProps,
+  DataKeys,
+} from '../firebase/withFirebase'
 import { Items, Units, ItemTypes, Feed } from '../../types'
-import FeedInput from './FeedInput'
+// import FeedInput from './FeedInput'
 import uuid from 'uuid/v4'
+/*
 
 type Props = FirebaseFunctionProps & {
   feeds: Feed[]
@@ -52,24 +56,34 @@ class Input extends React.Component<Props, State> {
     this.setState({ selectedOption: typedValue })
   }
 
-  handleInputUpdate = ({
-    amount,
-    unit,
-    note,
-    type,
-  }: {
-    amount: number
-    unit: Units
-    type: ItemTypes
-    note?: string
-  }) => {
-    const newItem: Items = {
+  handleInputUpdate = (itemDetails: any) => {
+    let newItem: Items = {
       id: this.ID,
-      amount,
-      unit,
-      note,
-      type,
       time: new Date().toUTCString(),
+    }
+    switch (itemDetails.type) {
+      case ItemTypes.Feeds:
+        const { amount, unit, note, type } = itemDetails
+        newItem = {
+          id: this.ID,
+          amount,
+          unit,
+          note,
+          type,
+          time: new Date().toUTCString(),
+        }
+        break
+
+      case ItemTypes.Nappy:
+        const { isWee, isPoop } = itemDetails
+        newItem = {
+          id: this.ID,
+          isWee,
+          isPoop,
+          note,
+          time: new Date().toUTCString(),
+        }
+        break
     }
     this.setState({ newItem })
   }
@@ -105,4 +119,5 @@ class Input extends React.Component<Props, State> {
   }
 }
 
-export default withFirebase(Input)
+export default withFirebase([DataKeys.Feeds])(Input)
+*/

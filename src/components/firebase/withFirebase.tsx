@@ -1,32 +1,36 @@
 import * as React from 'react'
-import { FirebaseProps, firebaseDB, firestore } from './Firebase'
 import firebase from 'firebase'
-import { Feed, Items, ItemTypes } from '../../types'
-// import { DataFunctions } from './types'
+import { firebaseDB, firestore } from './Firebase'
+import { Feed, Items, ItemTypes, Nappy } from '../../types'
 
-interface State {
-  feeds: Feed[]
+export enum DataKeys {
+  Feeds = 'feeds',
 }
 
-// Temporary duplicate of the ones in types to make it easier to visualise
+export type FirebaseData = {
+  feeds: Feed[]
+  nappies: Nappy[]
+}
+
 export interface FirebaseFunctionProps {
   addEntry: (item: Items) => void
   updateEntry: (item: Items) => void
   removeEntry: (item: Items) => void
 }
 
-enum DataKeys {
-  Feeds = 'feeds',
+type State = {
+  feeds: Feed[]
+  nappies: Nappy[]
 }
 
 const dataKeys: DataKeys[] = [DataKeys.Feeds]
 
-const wrapWithFirebaseComponent = <TChildComponentProps extends {}>(
-  ChildComponent:
-    | React.ComponentClass<TChildComponentProps & FirebaseFunctionProps & State>
-    | React.StatelessComponent<
-        TChildComponentProps & FirebaseFunctionProps & State
-      >,
+const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
+  TChildComponentProps extends {}
+>(
+  ChildComponent: React.ComponentType<
+    TChildComponentProps & FirebaseFunctionProps & FirebaseData
+  >,
 ) => {
   return class ConnectFirebaseToComponent extends React.Component<
     TChildComponentProps,
@@ -34,6 +38,7 @@ const wrapWithFirebaseComponent = <TChildComponentProps extends {}>(
   > {
     state: State = {
       feeds: [],
+      nappies: [],
     }
     database = firebaseDB
     firestore = firestore
@@ -91,9 +96,11 @@ const wrapWithFirebaseComponent = <TChildComponentProps extends {}>(
           })
           break
         case 'removed':
-          this.setState((state: State) => ({
-            [key]: state[key].filter(item => item.id != change.doc.id),
-          }))
+          this.setState((state: State) => {
+            return {
+              [key]: state[key].filter(item => item.id != change.doc.id),
+            }
+          })
           break
         default:
           console.error(
@@ -128,8 +135,16 @@ const wrapWithFirebaseComponent = <TChildComponentProps extends {}>(
         updateEntry: this.handleUpdateData,
         removeEntry: this.handleRemoveData,
       }
+      // let mappedFirebaseData: { [dataKey: string]: Items[] } = {}
+      // mappedDataKeys.forEach(key => (mappedFirebaseData[key] = this.state[key]))
       return (
-        <ChildComponent {...this.props} {...dataFunctions} {...this.state} />
+        <ChildComponent
+          {...this.props}
+          {...dataFunctions}
+          // feeds={this.state.feeds}
+          {...this.state}
+          // {...mappedFirebaseData}
+        />
       )
     }
   }
