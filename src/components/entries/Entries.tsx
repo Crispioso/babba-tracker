@@ -1,17 +1,19 @@
 import * as React from 'react'
 import withFirebase, {
   FirebaseFunctionProps,
-  DataKeys,
   FirebaseData,
 } from '../firebase/withFirebase'
 import { Feed, Items } from '../../types'
 import { format } from 'date-fns'
 
-type Props = FirebaseFunctionProps & FirebaseData
+type Props = FirebaseFunctionProps &
+  FirebaseData & {
+    onChangeEntry: (item: Items) => void
+  }
 
 class Entries extends React.Component<Props, {}> {
   handleUpdateEntry = (item: Items) => {
-    this.props.updateEntry(item)
+    this.props.onChangeEntry(item)
   }
 
   handleRemoveEntry = (item: Items) => {

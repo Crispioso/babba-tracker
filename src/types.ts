@@ -17,7 +17,7 @@ export enum Units {
 
 export interface Feed extends Item {
   type: ItemTypes.Feeds
-  amount: number
+  amount: string
   unit: Units
 }
 

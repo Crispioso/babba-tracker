@@ -1,6 +1,6 @@
 import * as React from 'react'
 import firebase from 'firebase'
-import { firebaseDB, firestore } from './Firebase'
+import Firebase, { firebaseDB, firestore } from './Firebase'
 import { Feed, Items, ItemTypes, Nappy } from '../../types'
 
 export enum DataKeys {
@@ -37,20 +37,34 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
     State
   > {
     state: State = {
-      feeds: [],
-      nappies: [],
+      feeds: Firebase.getFeeds(),
+      nappies: Firebase.getNappies(),
     }
-    database = firebaseDB
     firestore = firestore
+    unsubscribe?: () => void
 
-    componentWillMount() {
+    componentDidMount() {
+      if (!Firebase.isInitialised) {
+        throw Error(
+          'Attempt to render component with Firebase wrapper before Firebase has been initialised',
+        )
+      }
+
       dataKeys.forEach(key => {
-        this.firestore.collection(key).onSnapshot(snapshot => {
-          snapshot
-            .docChanges()
-            .forEach(change => this.handleFirebaseChangeEvent(key, change))
-        })
+        this.unsubscribe = this.firestore
+          .collection(key)
+          .onSnapshot(snapshot => {
+            snapshot
+              .docChanges()
+              .forEach(change => this.handleFirebaseChangeEvent(key, change))
+          })
       })
+    }
+
+    componentWillUnmount() {
+      if (this.unsubscribe) {
+        this.unsubscribe()
+      }
     }
 
     handleFirebaseChangeEvent(
@@ -59,6 +73,11 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
     ) {
       switch (change.type) {
         case 'added':
+          if (change.doc.metadata.fromCache) {
+            // On initial load this gets all existing documents but we already get them in one batch, so this
+            // ends up duplicating them. Which is why we have this check.
+            return
+          }
           this.setState((state: State) => {
             const data = change.doc.data()
             // @TODO validate our fields from the database. E.g. do units match our expected strings?
@@ -112,21 +131,41 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
     }
 
     handleAddData = (item: Items) => {
-      this.firestore.collection(item.type).add(item)
+      if (item.time == undefined) {
+        item.time = new Date().toISOString()
+      }
+
+      try {
+        this.firestore
+          .collection(item.type)
+          .doc(item.id)
+          .set(item)
+      } catch (error) {
+        console.error('Error adding Firebase data', error, item)
+      }
     }
 
-    handleUpdateData = (item: Items) => {
-      this.firestore
-        .collection(item.type)
-        .doc(item.id)
-        .update(item)
+    handleUpdateData = async (item: Items) => {
+      try {
+        console.log(item)
+        this.firestore
+          .collection(item.type)
+          .doc(item.id)
+          .update(item)
+      } catch (error) {
+        console.error('Error updating Firebase data', error, item)
+      }
     }
 
     handleRemoveData = (item: Items) => {
-      this.firestore
-        .collection(item.type)
-        .doc(item.id)
-        .delete()
+      try {
+        this.firestore
+          .collection(item.type)
+          .doc(item.id)
+          .delete()
+      } catch (error) {
+        console.error('Error remove Firebase data', error, item)
+      }
     }
 
     render() {
@@ -139,9 +178,8 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
       // mappedDataKeys.forEach(key => (mappedFirebaseData[key] = this.state[key]))
       return (
         <ChildComponent
-          {...this.props}
           {...dataFunctions}
-          // feeds={this.state.feeds}
+          {...this.props}
           {...this.state}
           // {...mappedFirebaseData}
         />
