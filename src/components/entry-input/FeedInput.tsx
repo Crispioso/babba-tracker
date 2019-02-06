@@ -3,12 +3,12 @@ import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
 } from '../firebase/withFirebase'
-import { Units, ItemTypes } from '../../types'
+import { Units, ItemTypes, Items } from '../../types'
 import uuid from 'uuid/v4'
 
 type Props = FirebaseFunctionProps &
   FirebaseData & {
-    ID?: string
+    item?: Items
     onFinish: () => void
   }
 
@@ -28,31 +28,19 @@ class FeedInput extends React.Component<Props, State> {
   state: State = defaultState
 
   componentDidMount() {
-    const ID = this.props.ID
-    if (ID) {
-      this.updateStateWithFeed(ID)
+    const { item } = this.props
+    if (item && item.type == ItemTypes.Feed) {
+      this.setState({ ...item })
     }
-  }
-
-  updateStateWithFeed(ID: string) {
-    const feed = this.props.feeds.find(feedItem => feedItem.id === ID)
-    if (feed == undefined) {
-      return
-    }
-    this.setState({
-      amount: feed.amount,
-      unit: feed.unit,
-      note: feed.note,
-    })
   }
 
   handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const { ID, updateEntry, addEntry, onFinish } = this.props
+    const { item, updateEntry, addEntry, onFinish } = this.props
     const { amount, unit, note } = this.state
 
-    if (!ID) {
+    if (!item) {
       addEntry({
         amount,
         unit,
@@ -64,15 +52,13 @@ class FeedInput extends React.Component<Props, State> {
       return
     }
 
-    const feed = this.props.feeds.find(feedItem => feedItem.id === ID)
-
-    if (feed == undefined) {
+    if (item.type !== ItemTypes.Feed) {
       onFinish()
       return
     }
 
     updateEntry({
-      ...feed,
+      ...item,
       amount,
       unit,
       note,

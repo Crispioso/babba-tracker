@@ -3,12 +3,12 @@ import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
 } from '../firebase/withFirebase'
-import { Units, ItemTypes } from '../../types'
+import { ItemTypes, Nappy, Items } from '../../types'
 import uuid from 'uuid/v4'
 
 type Props = FirebaseFunctionProps &
   FirebaseData & {
-    ID?: string
+    item?: Items
     onFinish: () => void
   }
 
@@ -28,31 +28,19 @@ class EntryInput extends React.Component<Props, State> {
   state: State = defaultState
 
   componentDidMount() {
-    const ID = this.props.ID
-    if (ID) {
-      this.updateStateWithFeed(ID)
+    const { item } = this.props
+    if (item && item.type == ItemTypes.Nappy) {
+      this.setState({ ...item })
     }
-  }
-
-  updateStateWithFeed(ID: string) {
-    const nappy = this.props.nappies.find(nappyItem => nappyItem.id === ID)
-    if (nappy == undefined) {
-      return
-    }
-    this.setState({
-      isWee: nappy.isWee,
-      isPoop: nappy.isPoop,
-      note: nappy.note,
-    })
   }
 
   handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const { ID, updateEntry, addEntry, onFinish } = this.props
+    const { item, updateEntry, addEntry, onFinish } = this.props
     const { isWee, isPoop, note } = this.state
 
-    if (!ID) {
+    if (!item) {
       addEntry({
         isWee,
         isPoop,
@@ -64,15 +52,13 @@ class EntryInput extends React.Component<Props, State> {
       return
     }
 
-    const nappy = this.props.nappies.find(nappyItem => nappyItem.id === ID)
-
-    if (nappy == undefined) {
+    if (item.type !== ItemTypes.Nappy) {
       onFinish()
       return
     }
 
     updateEntry({
-      ...nappy,
+      ...item,
       isWee,
       isPoop,
       note,

@@ -135,12 +135,14 @@ const wrapWithFirebaseComponent = (mappedDataKeys: string[] = []) => <
             }
             return feed
           }),
+          nappies,
         }
       }
 
       if (doc.type == ItemTypes.Nappy) {
         const nappy: Nappy = this.mapEventNappyDataToItem(ID, doc)
         return {
+          feeds,
           nappies: nappies.map(item => {
             if (item.id != ID) {
               return item
@@ -164,11 +166,13 @@ const wrapWithFirebaseComponent = (mappedDataKeys: string[] = []) => <
       if (doc.type == ItemTypes.Feed) {
         return {
           feeds: feeds.filter(item => item.id != ID),
+          nappies,
         }
       }
 
       if (doc.type == ItemTypes.Nappy) {
         return {
+          feeds,
           nappies: nappies.filter(item => item.id != ID),
         }
       }
@@ -205,7 +209,6 @@ const wrapWithFirebaseComponent = (mappedDataKeys: string[] = []) => <
           // On initial load this gets all existing documents but we already get them in one batch, so this
           // ends up duplicating them. Which is why we have this check.
           const items = this.getListFromType(change.doc.data().type)
-
           if (items.some((item: Items) => item.id === change.doc.id)) {
             return
           }
@@ -215,14 +218,14 @@ const wrapWithFirebaseComponent = (mappedDataKeys: string[] = []) => <
           )
           break
         case 'modified':
-          this.setState((state: State) => {
-            this.updateDataReducer(change.doc.id, change.doc.data(), state)
-          })
+          this.setState((state: State) =>
+            this.updateDataReducer(change.doc.id, change.doc.data(), state),
+          )
           break
         case 'removed':
-          this.setState((state: State) => {
-            this.removeDataReducer(change.doc.id, change.doc.data(), state)
-          })
+          this.setState((state: State) =>
+            this.removeDataReducer(change.doc.id, change.doc.data(), state),
+          )
           break
         default:
           console.error(

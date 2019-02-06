@@ -1,20 +1,29 @@
 import * as React from 'react'
 import FeedInput from './FeedInput'
 import NappyInput from './NappyInput'
-import { ItemTypes } from '../../types'
+import { ItemTypes, Items } from '../../types'
 
 type Props = {
   onFinish: () => void
-  ID?: string
+  item?: Items
 }
 
 type State = {
   selectedInputType: ItemTypes
+  disableSelection: boolean
 }
 
 class EntryInput extends React.Component<Props, State> {
   state: State = {
     selectedInputType: ItemTypes.Feed,
+    disableSelection: false,
+  }
+
+  componentDidMount() {
+    const { item } = this.props
+    if (item) {
+      this.setState({ disableSelection: true, selectedInputType: item.type })
+    }
   }
 
   handleSelectChange = (event: React.SyntheticEvent<HTMLSelectElement>) => {
@@ -46,11 +55,15 @@ class EntryInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { selectedInputType } = this.state
+    const { disableSelection, selectedInputType } = this.state
 
     return (
       <>
-        <select value={selectedInputType} onChange={this.handleSelectChange}>
+        <select
+          disabled={disableSelection}
+          value={selectedInputType}
+          onChange={this.handleSelectChange}
+        >
           <option value={ItemTypes.Feed}>Feed</option>
           <option value={ItemTypes.Nappy}>Nappy change</option>
         </select>

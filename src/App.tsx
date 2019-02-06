@@ -7,15 +7,15 @@ import { Items } from './types'
 
 type State = {
   isInitialisingFirebase: boolean
-  isAddingEntry: boolean
-  entryBeingEdited: string
+  isInputtingEntry: boolean
+  entryBeingEdited?: Items
 }
 
 class App extends React.Component<{}, State> {
   state: State = {
     isInitialisingFirebase: false,
-    isAddingEntry: false,
-    entryBeingEdited: '',
+    isInputtingEntry: false,
+    entryBeingEdited: undefined,
   }
 
   async componentWillMount() {
@@ -25,25 +25,25 @@ class App extends React.Component<{}, State> {
   }
 
   handleAddEntry = () => {
-    this.setState({ isAddingEntry: true, entryBeingEdited: '' })
+    this.setState({ isInputtingEntry: true, entryBeingEdited: undefined })
   }
 
   handleChangeEntry = (item: Items) => {
-    this.setState({ entryBeingEdited: item.id, isAddingEntry: false })
+    this.setState({ entryBeingEdited: item, isInputtingEntry: true })
   }
 
   handleFinishAdding = () => {
-    this.setState({ isAddingEntry: false })
+    this.setState({ isInputtingEntry: false })
   }
 
   handleFinishEditing = () => {
-    this.setState({ entryBeingEdited: '' })
+    this.setState({ isInputtingEntry: false, entryBeingEdited: undefined })
   }
 
   render() {
     const {
       isInitialisingFirebase,
-      isAddingEntry,
+      isInputtingEntry,
       entryBeingEdited,
     } = this.state
 
@@ -56,11 +56,13 @@ class App extends React.Component<{}, State> {
         <button type="button" onClick={this.handleAddEntry}>
           Add
         </button>
-        {isAddingEntry && <EntryInput onFinish={this.handleFinishAdding} />}
-        {entryBeingEdited && (
+        {isInputtingEntry && !entryBeingEdited && (
+          <EntryInput onFinish={this.handleFinishAdding} />
+        )}
+        {entryBeingEdited && entryBeingEdited && (
           <EntryInput
             onFinish={this.handleFinishEditing}
-            ID={entryBeingEdited}
+            item={entryBeingEdited}
           />
         )}
         <Entries onChangeEntry={this.handleChangeEntry} />

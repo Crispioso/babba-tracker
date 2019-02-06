@@ -54,7 +54,8 @@ class Entries extends React.Component<Props, {}> {
         <ul>
           {this.props.nappies.map((nappy: Nappy) => (
             <li key={nappy.id}>
-              {nappy.isPoop} {nappy.isWee} {this.renderEntryDate(nappy)}
+              {nappy.isPoop && 'Poop!'} {nappy.isWee && 'Wee'}{' '}
+              {this.renderEntryDate(nappy)}
               <button
                 type="button"
                 onClick={() => this.handleUpdateEntry(nappy)}
