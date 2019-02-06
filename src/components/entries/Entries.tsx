@@ -3,7 +3,7 @@ import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
 } from '../firebase/withFirebase'
-import { Feed, Items } from '../../types'
+import { Feed, Items, Nappy } from '../../types'
 import { format } from 'date-fns'
 
 type Props = FirebaseFunctionProps &
@@ -20,17 +20,17 @@ class Entries extends React.Component<Props, {}> {
     this.props.removeEntry(item)
   }
 
-  renderEntryDate = (feed: Feed) => {
-    if (feed.time == null) {
+  renderEntryDate = (item: Items) => {
+    if (item.time == null) {
       return
     }
-    return <>({format(new Date(feed.time), 'HH:mm:ss | ddd Wo MMM')})</>
+    return <>({format(new Date(item.time), 'HH:mm:ss | ddd Wo MMM')})</>
   }
 
   render() {
     return (
       <>
-        <h2>Entries</h2>
+        <h2>Feeds</h2>
         <ul>
           {this.props.feeds.map((feed: Feed) => (
             <li key={feed.id}>
@@ -44,6 +44,26 @@ class Entries extends React.Component<Props, {}> {
               <button
                 type="button"
                 onClick={() => this.handleRemoveEntry(feed)}
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+        <h2>Nappy changes</h2>
+        <ul>
+          {this.props.nappies.map((nappy: Nappy) => (
+            <li key={nappy.id}>
+              {nappy.isPoop} {nappy.isWee} {this.renderEntryDate(nappy)}
+              <button
+                type="button"
+                onClick={() => this.handleUpdateEntry(nappy)}
+              >
+                Change
+              </button>
+              <button
+                type="button"
+                onClick={() => this.handleRemoveEntry(nappy)}
               >
                 Remove
               </button>

@@ -56,7 +56,6 @@ class App extends React.Component<{}, State> {
         <button type="button" onClick={this.handleAddEntry}>
           Add
         </button>
-        <Entries onChangeEntry={this.handleChangeEntry} />
         {isAddingEntry && <EntryInput onFinish={this.handleFinishAdding} />}
         {entryBeingEdited && (
           <EntryInput
@@ -64,6 +63,7 @@ class App extends React.Component<{}, State> {
             ID={entryBeingEdited}
           />
         )}
+        <Entries onChangeEntry={this.handleChangeEntry} />
       </>
     )
   }

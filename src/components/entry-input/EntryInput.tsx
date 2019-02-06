@@ -1,179 +1,63 @@
 import * as React from 'react'
-import withFirebase, {
-  FirebaseFunctionProps,
-  FirebaseData,
-} from '../firebase/withFirebase'
-import { Units, ItemTypes } from '../../types'
-import uuid from 'uuid/v4'
+import FeedInput from './FeedInput'
+import NappyInput from './NappyInput'
+import { ItemTypes } from '../../types'
 
-type Props = FirebaseFunctionProps &
-  FirebaseData & {
-    ID?: string
-    onFinish: () => void
-  }
-
-type State = {
-  amount: string
-  unit: Units
-  note?: string
+type Props = {
+  onFinish: () => void
+  ID?: string
 }
 
-const defaultState: State = {
-  amount: '',
-  unit: Units.Millilitres,
-  note: '',
+type State = {
+  selectedInputType: ItemTypes
 }
 
 class EntryInput extends React.Component<Props, State> {
-  state: State = defaultState
-
-  componentDidMount() {
-    const ID = this.props.ID
-    if (ID) {
-      this.updateStateWithFeed(ID)
-    }
+  state: State = {
+    selectedInputType: ItemTypes.Feed,
   }
 
-  updateStateWithFeed(ID: string) {
-    const feed = this.props.feeds.find(feedItem => feedItem.id === ID)
-    if (feed == undefined) {
-      return
-    }
-    this.setState({
-      amount: feed.amount,
-      unit: feed.unit,
-      note: feed.note,
-    })
-  }
-
-  handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const { ID, updateEntry, addEntry, onFinish } = this.props
-    const { amount, unit, note } = this.state
-
-    if (!ID) {
-      addEntry({
-        amount,
-        unit,
-        note,
-        type: ItemTypes.Feeds,
-        id: uuid(),
-      })
-      onFinish()
-      return
-    }
-
-    const feed = this.props.feeds.find(feedItem => feedItem.id === ID)
-
-    if (feed == undefined) {
-      onFinish()
-      return
-    }
-
-    updateEntry({
-      ...feed,
-      amount,
-      unit,
-      note,
-    })
-    onFinish()
-  }
-
-  handleClear = () => {
-    this.setState(defaultState)
-  }
-
-  handleAmountChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value
-    if (value == null) {
-      return
-    }
-
-    this.setState({ amount: value })
-  }
-
-  handleUnitChange = (event: React.SyntheticEvent<HTMLSelectElement>) => {
-    let { value } = event.currentTarget
+  handleSelectChange = (event: React.SyntheticEvent<HTMLSelectElement>) => {
+    const { value } = event.currentTarget
 
     switch (value) {
-      case Units.Millilitres:
-        this.setState({ unit: Units.Millilitres })
+      case ItemTypes.Feed:
+        this.setState({ selectedInputType: ItemTypes.Feed })
         break
-      case Units.FluidOz:
-        this.setState({ unit: Units.FluidOz })
+      case ItemTypes.Nappy:
+        this.setState({ selectedInputType: ItemTypes.Nappy })
         break
       default:
-        console.warn('Unrecognised unit type selected', value)
+        console.warn('Unrecognised update type selection', value)
+        this.setState({ selectedInputType: ItemTypes.Feed })
         break
     }
   }
 
-  handleNoteChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
-    const value = event.currentTarget.value
-    if (value == null) {
-      return
-    }
+  renderInput() {
+    const { selectedInputType } = this.state
 
-    this.setState({ note: value })
+    switch (selectedInputType) {
+      case ItemTypes.Feed:
+        return <FeedInput {...this.props} />
+      case ItemTypes.Nappy:
+        return <NappyInput {...this.props} />
+    }
   }
 
   render() {
-    const { onFinish } = this.props
-    const { amount, unit, note } = this.state
+    const { selectedInputType } = this.state
+
     return (
       <>
-        {/* <select value={selectedOption} onChange={this.handleInputSelection}>
-          {options.map(option => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select> */}
-        <button type="button" onClick={onFinish}>
-          Close
-        </button>
-        <button type="button" onClick={this.handleClear}>
-          Clear
-        </button>
-        <form onSubmit={this.handleSubmit}>
-          <div>
-            <label htmlFor={'feed-amount'}>Amount</label>
-            <input
-              onChange={this.handleAmountChange}
-              required
-              id={'feed-amount'}
-              type="number"
-              value={amount}
-            />
-          </div>
-          <div>
-            <label htmlFor={'feed-unit'}>Unit</label>
-            <select
-              required
-              name={'feed-unit'}
-              id={'feed-unit'}
-              onChange={this.handleUnitChange}
-              value={unit}
-            >
-              <option value={Units.Millilitres}>{Units.Millilitres}</option>
-              <option value={Units.FluidOz}>{Units.FluidOz}</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor={'feed-note'}>Note</label>
-            <input
-              onChange={this.handleNoteChange}
-              id={'feed-note'}
-              type="text"
-              value={note}
-            />
-          </div>
-          <button type="submit">Submit</button>
-        </form>
+        <select value={selectedInputType} onChange={this.handleSelectChange}>
+          <option value={ItemTypes.Feed}>Feed</option>
+          <option value={ItemTypes.Nappy}>Nappy change</option>
+        </select>
+        {this.renderInput()}
       </>
     )
   }
 }
 
-export default withFirebase()(EntryInput)
+export default EntryInput

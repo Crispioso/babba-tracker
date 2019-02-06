@@ -1,3 +1,5 @@
+export type ValueOf<T> = T[keyof T]
+
 export interface Item {
   id: string
   type: ItemTypes
@@ -6,7 +8,7 @@ export interface Item {
 }
 
 export enum ItemTypes {
-  Feeds = 'feeds',
+  Feed = 'feed',
   Nappy = 'nappy',
 }
 
@@ -16,7 +18,7 @@ export enum Units {
 }
 
 export interface Feed extends Item {
-  type: ItemTypes.Feeds
+  type: ItemTypes.Feed
   amount: string
   unit: Units
 }

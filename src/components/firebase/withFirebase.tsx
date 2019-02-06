@@ -1,10 +1,11 @@
 import * as React from 'react'
 import firebase from 'firebase'
-import Firebase, { firebaseDB, firestore } from './Firebase'
+import Firebase, { firestore } from './Firebase'
 import { Feed, Items, ItemTypes, Nappy } from '../../types'
 
 export enum DataKeys {
   Feeds = 'feeds',
+  Nappies = 'nappies',
 }
 
 export type FirebaseData = {
@@ -23,9 +24,9 @@ type State = {
   nappies: Nappy[]
 }
 
-const dataKeys: DataKeys[] = [DataKeys.Feeds]
+const dataKeysList = [DataKeys.Feeds, DataKeys.Nappies]
 
-const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
+const wrapWithFirebaseComponent = (mappedDataKeys: string[] = []) => <
   TChildComponentProps extends {}
 >(
   ChildComponent: React.ComponentType<
@@ -50,13 +51,13 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
         )
       }
 
-      dataKeys.forEach(key => {
+      dataKeysList.forEach(key => {
         this.unsubscribe = this.firestore
           .collection(key)
           .onSnapshot(snapshot => {
             snapshot
               .docChanges()
-              .forEach(change => this.handleFirebaseChangeEvent(key, change))
+              .forEach(change => this.handleFirebaseChangeEvent(change))
           })
       })
     }
@@ -67,58 +68,160 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
       }
     }
 
-    handleFirebaseChangeEvent(
-      key: DataKeys,
-      change: firebase.firestore.DocumentChange,
+    mapEventFeedDataToItem = (
+      ID: string,
+      doc: firebase.firestore.DocumentData,
+    ): Feed => ({
+      id: ID,
+      type: ItemTypes.Feed,
+      amount: doc.amount != null ? doc.amount : '',
+      unit: doc.unit != null ? doc.unit : '',
+      note: doc.note,
+      time: doc.time != null ? doc.time : undefined,
+    })
+
+    mapEventNappyDataToItem = (
+      ID: string,
+      doc: firebase.firestore.DocumentData,
+    ): Nappy => ({
+      id: ID,
+      type: ItemTypes.Nappy,
+      isPoop: doc.isPoop,
+      isWee: doc.isWee,
+      note: doc.note,
+      time: doc.time != null ? doc.time : undefined,
+    })
+
+    addDataReducer(
+      ID: string,
+      doc: firebase.firestore.DocumentData,
+      state: State,
     ) {
+      const { feeds, nappies } = state
+
+      if (doc.type == ItemTypes.Feed) {
+        const feed: Feed = this.mapEventFeedDataToItem(ID, doc)
+        return {
+          feeds: [...feeds, feed],
+          nappies: nappies,
+        }
+      }
+
+      if (doc.type == ItemTypes.Nappy) {
+        const nappy: Nappy = this.mapEventNappyDataToItem(ID, doc)
+        return {
+          feeds: feeds,
+          nappies: [...nappies, nappy],
+        }
+      }
+
+      console.error('Unrecognised doc type added to firebase:', doc.type)
+      return { feeds, nappies }
+    }
+
+    updateDataReducer(
+      ID: string,
+      doc: firebase.firestore.DocumentData,
+      state: State,
+    ) {
+      const { feeds, nappies } = state
+
+      if (doc.type == ItemTypes.Feed) {
+        const feed: Feed = this.mapEventFeedDataToItem(ID, doc)
+        return {
+          feeds: feeds.map(item => {
+            if (item.id != ID) {
+              return item
+            }
+            return feed
+          }),
+        }
+      }
+
+      if (doc.type == ItemTypes.Nappy) {
+        const nappy: Nappy = this.mapEventNappyDataToItem(ID, doc)
+        return {
+          nappies: nappies.map(item => {
+            if (item.id != ID) {
+              return item
+            }
+            return nappy
+          }),
+        }
+      }
+
+      console.error('Unrecognised doc type updated in firebase')
+      return { feeds, nappies }
+    }
+
+    removeDataReducer(
+      ID: string,
+      doc: firebase.firestore.DocumentData,
+      state: State,
+    ) {
+      const { feeds, nappies } = state
+
+      if (doc.type == ItemTypes.Feed) {
+        return {
+          feeds: feeds.filter(item => item.id != ID),
+        }
+      }
+
+      if (doc.type == ItemTypes.Nappy) {
+        return {
+          nappies: nappies.filter(item => item.id != ID),
+        }
+      }
+
+      console.error('Unrecognised doc type removed from firebase')
+      return { feeds, nappies }
+    }
+
+    getKeyFromType(type: ItemTypes): string {
+      switch (type) {
+        case ItemTypes.Feed:
+          return DataKeys.Feeds
+        case ItemTypes.Nappy:
+          return DataKeys.Nappies
+        default:
+          return 'unknown_type'
+      }
+    }
+
+    getListFromType(type: ItemTypes): Items[] {
+      switch (type) {
+        case ItemTypes.Feed:
+          return this.state[DataKeys.Feeds]
+        case ItemTypes.Nappy:
+          return this.state[DataKeys.Nappies]
+        default:
+          return []
+      }
+    }
+
+    handleFirebaseChangeEvent(change: firebase.firestore.DocumentChange) {
       switch (change.type) {
         case 'added':
-          if (change.doc.metadata.fromCache) {
-            // On initial load this gets all existing documents but we already get them in one batch, so this
-            // ends up duplicating them. Which is why we have this check.
+          // On initial load this gets all existing documents but we already get them in one batch, so this
+          // ends up duplicating them. Which is why we have this check.
+          const items = this.getListFromType(change.doc.data().type)
+
+          if (items.some((item: Items) => item.id === change.doc.id)) {
             return
           }
-          this.setState((state: State) => {
-            const data = change.doc.data()
-            // @TODO validate our fields from the database. E.g. do units match our expected strings?
-            const feed: Feed = {
-              id: change.doc.id,
-              amount: data.amount,
-              unit: data.unit,
-              time: data.time != null ? data.time : undefined,
-              type: ItemTypes.Feeds,
-            }
-            return {
-              [key]: [...state[key], feed],
-            }
-          })
+
+          this.setState((state: State) =>
+            this.addDataReducer(change.doc.id, change.doc.data(), state),
+          )
           break
         case 'modified':
           this.setState((state: State) => {
-            const data = change.doc.data()
-            // @TODO validate our fields from the database. E.g. do units match our expected strings?
-            const feed: Feed = {
-              id: change.doc.id,
-              amount: data.amount,
-              unit: data.unit,
-              time: data.time != null ? data.time : undefined,
-              type: ItemTypes.Feeds,
-            }
-            return {
-              [key]: state[key].map(item => {
-                if (item.id != change.doc.id) {
-                  return item
-                }
-                return feed
-              }),
-            }
+            this.updateDataReducer(change.doc.id, change.doc.data(), state)
           })
           break
         case 'removed':
           this.setState((state: State) => {
-            return {
-              [key]: state[key].filter(item => item.id != change.doc.id),
-            }
+            this.removeDataReducer(change.doc.id, change.doc.data(), state)
           })
           break
         default:
@@ -137,7 +240,7 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
 
       try {
         this.firestore
-          .collection(item.type)
+          .collection(this.getKeyFromType(item.type))
           .doc(item.id)
           .set(item)
       } catch (error) {
@@ -147,9 +250,8 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
 
     handleUpdateData = async (item: Items) => {
       try {
-        console.log(item)
         this.firestore
-          .collection(item.type)
+          .collection(this.getKeyFromType(item.type))
           .doc(item.id)
           .update(item)
       } catch (error) {
@@ -160,7 +262,7 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
     handleRemoveData = (item: Items) => {
       try {
         this.firestore
-          .collection(item.type)
+          .collection(this.getKeyFromType(item.type))
           .doc(item.id)
           .delete()
       } catch (error) {
@@ -177,12 +279,7 @@ const wrapWithFirebaseComponent = (mappedDataKeys: DataKeys[] = []) => <
       // let mappedFirebaseData: { [dataKey: string]: Items[] } = {}
       // mappedDataKeys.forEach(key => (mappedFirebaseData[key] = this.state[key]))
       return (
-        <ChildComponent
-          {...dataFunctions}
-          {...this.props}
-          {...this.state}
-          // {...mappedFirebaseData}
-        />
+        <ChildComponent {...dataFunctions} {...this.props} {...this.state} />
       )
     }
   }
