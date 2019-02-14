@@ -19,7 +19,7 @@ export interface FirebaseFunctionProps {
   removeEntry: (item: Items) => void
 }
 
-type State = {
+export type State = {
   feeds: Feed[]
   nappies: Nappy[]
 }
@@ -42,7 +42,7 @@ const wrapWithFirebaseComponent = (mappedDataKeys: string[] = []) => <
       nappies: Firebase.getNappies(),
     }
     firestore = firestore
-    unsubscribe?: () => void
+    unsubscriptions: Array<() => void> = []
 
     componentDidMount() {
       if (!Firebase.isInitialised) {
@@ -52,20 +52,56 @@ const wrapWithFirebaseComponent = (mappedDataKeys: string[] = []) => <
       }
 
       dataKeysList.forEach(key => {
-        this.unsubscribe = this.firestore
+        this.unsubscriptions.push(
+          this.firestore.collection(key).onSnapshot(snapshot => {
+            snapshot
+              .docChanges()
+              .forEach(change => this.handleFirebaseChangeEvent(change))
+          }),
+        )
+      })
+    }
+
+    componentWillUnmount() {
+      if (this.unsubscriptions.length === 0) {
+        return
+      }
+      this.unsubscriptions.forEach(subscription => subscription())
+    }
+
+    getByDate = async (startDate: Date, endDate?: Date) => {
+      const promises = dataKeysList.map(async key => {
+        await this.firestore
           .collection(key)
+          .where('time', '>', startDate.getTime())
+          .where(
+            'time',
+            '<',
+            endDate ? endDate.getTime() : new Date().getTime(),
+          )
+          .get()
+
+        this.firestore
+          .collection(key)
+          .where('time', '>', startDate.getTime())
+          .where(
+            'time',
+            '<',
+            endDate ? endDate.getTime() : new Date().getTime(),
+          )
           .onSnapshot(snapshot => {
             snapshot
               .docChanges()
               .forEach(change => this.handleFirebaseChangeEvent(change))
           })
       })
+
+      const responses = await Promise.all(promises)
+      console.log(responses)
     }
 
-    componentWillUnmount() {
-      if (this.unsubscribe) {
-        this.unsubscribe()
-      }
+    getTimestamp = (): number => {
+      return new Date().getTime()
     }
 
     mapEventFeedDataToItem = (
@@ -238,7 +274,7 @@ const wrapWithFirebaseComponent = (mappedDataKeys: string[] = []) => <
 
     handleAddData = (item: Items) => {
       if (item.time == undefined) {
-        item.time = new Date().toISOString()
+        item.time = this.getTimestamp()
       }
 
       try {

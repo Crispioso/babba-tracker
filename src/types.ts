@@ -3,7 +3,7 @@ export type ValueOf<T> = T[keyof T]
 export interface Item {
   id: string
   type: ItemTypes
-  time?: string
+  time?: number
   note?: string
 }
 

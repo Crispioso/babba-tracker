@@ -1,9 +1,10 @@
 import React from 'react'
-import './App.css'
+import 'typeface-roboto'
 import Firebase from './components/firebase/Firebase'
 import Entries from './components/entries/Entries'
 import EntryInput from './components/entry-input/EntryInput'
 import { Items } from './types'
+import { Typography } from '@material-ui/core'
 
 type State = {
   isInitialisingFirebase: boolean
@@ -52,7 +53,7 @@ class App extends React.Component<{}, State> {
     }
 
     return (
-      <>
+      <Typography component="div">
         <button type="button" onClick={this.handleAddEntry}>
           Add
         </button>
@@ -66,7 +67,7 @@ class App extends React.Component<{}, State> {
           />
         )}
         <Entries onChangeEntry={this.handleChangeEntry} />
-      </>
+      </Typography>
     )
   }
 }
