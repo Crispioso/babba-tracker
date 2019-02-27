@@ -14,6 +14,13 @@ export type FirebaseData = {
 }
 
 export interface FirebaseFunctionProps {
+  subscribeByDate: ({
+    startDate,
+    endDate,
+  }: {
+    startDate: Date
+    endDate: Date
+  }) => Array<() => void>
   addEntry: (item: Items) => void
   updateEntry: (item: Items) => void
   removeEntry: (item: Items) => void
@@ -26,12 +33,7 @@ export type State = {
 
 const dataKeysList = [DataKeys.Feeds, DataKeys.Nappies]
 
-const wrapWithFirebaseComponent = (
-  { startDate, endDate }: { startDate: Date; endDate?: Date } = {
-    startDate: new Date(new Date().getTime() - 60 * 60 * 24 * 1000), // Default to 24 hours ago as the start date
-    endDate: new Date(new Date().getTime() + 60 * 60 * 24 * 1000), // Default to 24 hours in the future
-  },
-) => <TChildComponentProps extends {}>(
+const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
   ChildComponent: React.ComponentType<
     TChildComponentProps & FirebaseFunctionProps & FirebaseData
   >,
@@ -53,9 +55,6 @@ const wrapWithFirebaseComponent = (
           'Attempt to render component with Firebase wrapper before Firebase has been initialised',
         )
       }
-
-      // this.getByDate()
-      this.subscribeByDate()
     }
 
     componentWillUnmount() {
@@ -65,34 +64,16 @@ const wrapWithFirebaseComponent = (
       this.unsubscriptions.forEach(subscription => subscription())
     }
 
-    getByDate = async () => {
-      const promises = dataKeysList.map(key => {
-        return this.firestore
-          .collection(key)
-          .where('time', '>', startDate.getTime())
-          .where(
-            'time',
-            '<',
-            endDate ? endDate.getTime() : new Date().getTime(),
-          )
-          .orderBy('time', 'desc')
-          .get()
-      })
+    subscribeByDate = ({
+      startDate,
+      endDate,
+    }: {
+      startDate: Date
+      endDate: Date
+    }) => {
+      const unsubscriptions: Array<() => void> = []
 
-      try {
-        const responses = await Promise.all(promises)
-        responses.forEach(response => {
-          response.docs.forEach(doc => {
-            const data = doc.data()
-            this.setState(state => this.addDataReducer(data.id, data, state))
-          })
-        })
-      } catch (error) {
-        console.error('Error fetching items by data', error)
-      }
-    }
-
-    subscribeByDate = () => {
+      this.setState({ feeds: [], nappies: [] })
       dataKeysList.forEach(key => {
         const subscription = this.firestore
           .collection(key)
@@ -109,8 +90,10 @@ const wrapWithFirebaseComponent = (
               .forEach(change => this.handleFirebaseChangeEvent(change))
           })
 
-        this.unsubscriptions.push(subscription)
+        unsubscriptions.push(subscription)
       })
+      this.unsubscriptions = [...this.unsubscriptions, ...unsubscriptions]
+      return unsubscriptions
     }
 
     getTimestamp = (): number => {
@@ -253,7 +236,6 @@ const wrapWithFirebaseComponent = (
     }
 
     handleFirebaseChangeEvent(change: firebase.firestore.DocumentChange) {
-      console.log('Changey change', change.type, change.doc.data())
       switch (change.type) {
         case 'added':
           // On initial load this gets all existing documents but we already get them in one batch, so this
@@ -328,6 +310,7 @@ const wrapWithFirebaseComponent = (
         addEntry: this.handleAddData,
         updateEntry: this.handleUpdateData,
         removeEntry: this.handleRemoveData,
+        subscribeByDate: this.subscribeByDate,
       }
       // let mappedFirebaseData: { [dataKey: string]: Items[] } = {}
       // mappedDataKeys.forEach(key => (mappedFirebaseData[key] = this.state[key]))

@@ -1,71 +1,57 @@
 import * as React from 'react'
-import withFirebase, {
-  FirebaseFunctionProps,
-  FirebaseData,
-} from '../firebase/withFirebase'
 import { Feed, Items, Nappy } from '../../types'
 import { format } from 'date-fns'
 
-type Props = FirebaseFunctionProps &
-  FirebaseData & {
-    onChangeEntry: (item: Items) => void
-  }
+type Props = {
+  onChangeEntry: (item: Items) => void
+  removeEntry: (item: Items) => void
+  feeds: Feed[]
+  nappies: Nappy[]
+}
 
 class Entries extends React.Component<Props, {}> {
-  handleUpdateEntry = (item: Items) => {
-    this.props.onChangeEntry(item)
-  }
-
-  handleRemoveEntry = (item: Items) => {
-    this.props.removeEntry(item)
-  }
-
   renderEntryDate = (item: Items) => {
     if (item.time == null) {
       return
     }
-    return <>({format(new Date(item.time), 'HH:mm:ss | ddd Wo MMM')})</>
+    return <>({format(new Date(item.time), 'HH:mm:ss | ddd Do MMM')})</>
   }
 
   render() {
+    const { onChangeEntry, removeEntry } = this.props
     return (
       <>
         <h2>Feeds</h2>
-        <ul>
+        <ul style={{ marginBottom: '32px' }}>
           {this.props.feeds.map((feed: Feed) => (
-            <li key={feed.id}>
+            <li key={feed.id} style={{ marginBottom: '16px' }}>
               {feed.amount} {feed.unit} {this.renderEntryDate(feed)}
-              <button
-                type="button"
-                onClick={() => this.handleUpdateEntry(feed)}
-              >
+              {feed.note && (
+                <span>
+                  <br />
+                  {feed.note}
+                </span>
+              )}
+              <br />
+              <button type="button" onClick={() => onChangeEntry(feed)}>
                 Change
               </button>
-              <button
-                type="button"
-                onClick={() => this.handleRemoveEntry(feed)}
-              >
+              <button type="button" onClick={() => removeEntry(feed)}>
                 Remove
               </button>
             </li>
           ))}
         </ul>
         <h2>Nappy changes</h2>
-        <ul>
+        <ul style={{ marginBottom: '32px' }}>
           {this.props.nappies.map((nappy: Nappy) => (
             <li key={nappy.id}>
               {nappy.isPoop && 'Poop!'} {nappy.isWee && 'Wee'}{' '}
               {this.renderEntryDate(nappy)}
-              <button
-                type="button"
-                onClick={() => this.handleUpdateEntry(nappy)}
-              >
+              <button type="button" onClick={() => onChangeEntry(nappy)}>
                 Change
               </button>
-              <button
-                type="button"
-                onClick={() => this.handleRemoveEntry(nappy)}
-              >
+              <button type="button" onClick={() => removeEntry(nappy)}>
                 Remove
               </button>
             </li>
@@ -76,4 +62,4 @@ class Entries extends React.Component<Props, {}> {
   }
 }
 
-export default withFirebase()(Entries)
+export default Entries

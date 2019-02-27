@@ -1,7 +1,7 @@
 import React from 'react'
 import 'typeface-roboto'
 import Firebase from './components/firebase/Firebase'
-import Entries from './components/entries/Entries'
+import EntriesController from './components/entries/EntriesController'
 import EntryInput from './components/entry-input/EntryInput'
 import { Items } from './types'
 import { Typography } from '@material-ui/core'
@@ -66,7 +66,7 @@ class App extends React.Component<{}, State> {
             item={entryBeingEdited}
           />
         )}
-        <Entries onChangeEntry={this.handleChangeEntry} />
+        <EntriesController onChangeEntry={this.handleChangeEntry} />
       </Typography>
     )
   }
