@@ -60,7 +60,7 @@ class App extends React.Component<{}, State> {
         {isInputtingEntry && !entryBeingEdited && (
           <EntryInput onFinish={this.handleFinishAdding} />
         )}
-        {entryBeingEdited && entryBeingEdited && (
+        {isInputtingEntry && entryBeingEdited && (
           <EntryInput
             onFinish={this.handleFinishEditing}
             item={entryBeingEdited}

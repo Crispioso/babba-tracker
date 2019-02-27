@@ -50,10 +50,10 @@ class Firebase {
       return
     }
 
-    const feedsSnapshot = await firestore.collection(DataKeys.Feeds).get()
-    const nappiesSnapshot = await firestore.collection(DataKeys.Nappies).get()
-    this.feeds = feedsSnapshot.docs.map(doc => doc.data() as Feed)
-    this.nappies = nappiesSnapshot.docs.map(doc => doc.data() as Nappy)
+    // const feedsSnapshot = await firestore.collection(DataKeys.Feeds).get()
+    // const nappiesSnapshot = await firestore.collection(DataKeys.Nappies).get()
+    // this.feeds = feedsSnapshot.docs.map(doc => doc.data() as Feed)
+    // this.nappies = nappiesSnapshot.docs.map(doc => doc.data() as Nappy)
     this.isInitialised = true
     return { feeds: this.feeds, nappies: this.nappies }
   }
