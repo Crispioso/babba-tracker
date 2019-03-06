@@ -1,10 +1,9 @@
-import * as React from 'react'
 import * as app from 'firebase/app'
+import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/database'
 import { FirebaseConfig } from './types'
 import { Feed, Nappy } from '../../types'
-import { DataKeys } from './withFirebase'
 
 export interface FirebaseProps {
   firestore: firebase.firestore.Firestore
@@ -29,9 +28,11 @@ const config: FirebaseConfig = {
 //   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
 // }
 
+export const firebase = app
 export const firebaseApp = app.initializeApp(config)
 export const firebaseDB = app.database()
 export const firestore = app.firestore()
+export const firebaseAuth = app.auth()
 
 class Firebase {
   feeds: Feed[]
@@ -50,10 +51,7 @@ class Firebase {
       return
     }
 
-    // const feedsSnapshot = await firestore.collection(DataKeys.Feeds).get()
-    // const nappiesSnapshot = await firestore.collection(DataKeys.Nappies).get()
-    // this.feeds = feedsSnapshot.docs.map(doc => doc.data() as Feed)
-    // this.nappies = nappiesSnapshot.docs.map(doc => doc.data() as Nappy)
+    // Do anything with Firebase that I want to be available before anything tries to use this Firebase class
     this.isInitialised = true
     return { feeds: this.feeds, nappies: this.nappies }
   }

@@ -48,6 +48,13 @@ class Entries extends React.Component<Props, {}> {
             <li key={nappy.id}>
               {nappy.isPoop && 'Poop!'} {nappy.isWee && 'Wee'}{' '}
               {this.renderEntryDate(nappy)}
+              {nappy.note && (
+                <span>
+                  <br />
+                  {nappy.note}
+                </span>
+              )}
+              <br />
               <button type="button" onClick={() => onChangeEntry(nappy)}>
                 Change
               </button>

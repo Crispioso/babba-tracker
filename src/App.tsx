@@ -5,10 +5,13 @@ import EntriesController from './components/entries/EntriesController'
 import EntryInput from './components/entry-input/EntryInput'
 import { Items } from './types'
 import { Typography } from '@material-ui/core'
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
+import { firebase, firebaseAuth } from './components/firebase/Firebase'
 
 type State = {
   isInitialisingFirebase: boolean
   isInputtingEntry: boolean
+  isSignedIn: boolean
   entryBeingEdited?: Items
 }
 
@@ -16,13 +19,38 @@ class App extends React.Component<{}, State> {
   state: State = {
     isInitialisingFirebase: false,
     isInputtingEntry: false,
+    isSignedIn: false,
     entryBeingEdited: undefined,
   }
 
+  signInConfig: firebaseui.auth.Config = {}
+
+  unregisterAuthObserver: firebase.Unsubscribe | null = null
+
   async componentWillMount() {
+    this.signInConfig = {
+      signInFlow: 'popup',
+      signInOptions: [
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        firebase.auth.EmailAuthProvider.PROVIDER_ID,
+      ],
+      callbacks: {
+        signInSuccessWithAuthResult: () => false,
+      },
+    }
+
     this.setState({ isInitialisingFirebase: true })
     await Firebase.initialise()
-    this.setState({ isInitialisingFirebase: false })
+    this.unregisterAuthObserver = firebaseAuth.onAuthStateChanged(user =>
+      this.setState({ isSignedIn: !!user, isInitialisingFirebase: false }),
+    )
+  }
+
+  componentWillUnmount() {
+    if (this.unregisterAuthObserver == null) {
+      return
+    }
+    this.unregisterAuthObserver()
   }
 
   handleAddEntry = () => {
@@ -46,10 +74,20 @@ class App extends React.Component<{}, State> {
       isInitialisingFirebase,
       isInputtingEntry,
       entryBeingEdited,
+      isSignedIn,
     } = this.state
 
     if (isInitialisingFirebase) {
       return <div>Loading...</div>
+    }
+
+    if (!isSignedIn) {
+      return (
+        <StyledFirebaseAuth
+          uiConfig={this.signInConfig}
+          firebaseAuth={firebaseAuth}
+        />
+      )
     }
 
     return (
