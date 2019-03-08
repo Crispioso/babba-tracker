@@ -5,6 +5,7 @@ import withFirebase, {
 } from '../firebase/withFirebase'
 import { Units, ItemTypes, Items } from '../../types'
 import uuid from 'uuid/v4'
+import { format } from 'date-fns'
 
 type Props = FirebaseFunctionProps &
   FirebaseData & {
@@ -16,12 +17,14 @@ type State = {
   amount: string
   unit: Units
   note?: string
+  time: number
 }
 
 const defaultState: State = {
   amount: '',
   unit: Units.Millilitres,
   note: '',
+  time: 0,
 }
 
 class FeedInput extends React.Component<Props, State> {
@@ -38,7 +41,7 @@ class FeedInput extends React.Component<Props, State> {
     event.preventDefault()
 
     const { item, updateEntry, addEntry, onFinish } = this.props
-    const { amount, unit, note } = this.state
+    const { amount, unit, note, time } = this.state
 
     if (!item) {
       addEntry({
@@ -47,6 +50,7 @@ class FeedInput extends React.Component<Props, State> {
         note,
         type: ItemTypes.Feed,
         id: uuid(),
+        time,
       })
       onFinish()
       return
@@ -68,6 +72,10 @@ class FeedInput extends React.Component<Props, State> {
 
   handleClear = () => {
     this.setState(defaultState)
+  }
+
+  handleDateChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+    this.setState({ time: new Date(event.currentTarget.value).getTime() })
   }
 
   handleAmountChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
@@ -106,7 +114,11 @@ class FeedInput extends React.Component<Props, State> {
 
   render() {
     const { onFinish } = this.props
-    const { amount, unit, note } = this.state
+    const { amount, unit, note, time } = this.state
+
+    const ISOstring = new Date(time).toISOString()
+    const strippedTimeString = ISOstring.substring(0, ISOstring.length - 1)
+
     return (
       <>
         <button type="button" onClick={onFinish}>
@@ -116,6 +128,17 @@ class FeedInput extends React.Component<Props, State> {
           Clear
         </button>
         <form onSubmit={this.handleSubmit}>
+          {time && (
+            <div>
+              <label htmlFor="feed-date-time">When</label>
+              <input
+                value={strippedTimeString}
+                type="datetime-local"
+                id="feed-date-time"
+                onChange={this.handleDateChange}
+              />
+            </div>
+          )}
           <div>
             <label htmlFor={'feed-amount'}>Amount</label>
             <input

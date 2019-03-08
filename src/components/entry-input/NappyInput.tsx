@@ -47,6 +47,7 @@ class EntryInput extends React.Component<Props, State> {
         note,
         type: ItemTypes.Nappy,
         id: uuid(),
+        time: 0,
       })
       onFinish()
       return

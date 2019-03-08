@@ -269,7 +269,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
     }
 
     handleAddData = (item: Items) => {
-      if (item.time == undefined) {
+      if (item.time == undefined || !item.time) {
         item.time = this.getTimestamp()
       }
 
@@ -312,8 +312,6 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         removeEntry: this.handleRemoveData,
         subscribeByDate: this.subscribeByDate,
       }
-      // let mappedFirebaseData: { [dataKey: string]: Items[] } = {}
-      // mappedDataKeys.forEach(key => (mappedFirebaseData[key] = this.state[key]))
       return (
         <ChildComponent {...dataFunctions} {...this.props} {...this.state} />
       )

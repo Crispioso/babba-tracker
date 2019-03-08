@@ -4,9 +4,16 @@ import Firebase from './components/firebase/Firebase'
 import EntriesController from './components/entries/EntriesController'
 import EntryInput from './components/entry-input/EntryInput'
 import { Items } from './types'
-import { Typography } from '@material-ui/core'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import { firebase, firebaseAuth } from './components/firebase/Firebase'
+import Dialog from '@material-ui/core/Dialog'
+import Slide from '@material-ui/core/Slide'
+import Fab from '@material-ui/core/Fab'
+import AddIcon from '@material-ui/icons/Add'
+
+function TransitionUp<P>(props: P) {
+  return <Slide direction="up" {...props} />
+}
 
 type State = {
   isInitialisingFirebase: boolean
@@ -30,10 +37,7 @@ class App extends React.Component<{}, State> {
   async componentWillMount() {
     this.signInConfig = {
       signInFlow: 'popup',
-      signInOptions: [
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-      ],
+      signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
       callbacks: {
         signInSuccessWithAuthResult: () => false,
       },
@@ -41,6 +45,10 @@ class App extends React.Component<{}, State> {
 
     this.setState({ isInitialisingFirebase: true })
     await Firebase.initialise()
+    const currentUser = firebaseAuth.currentUser
+    if (currentUser == null) {
+      this.setState({ isSignedIn: false })
+    }
     this.unregisterAuthObserver = firebaseAuth.onAuthStateChanged(user =>
       this.setState({ isSignedIn: !!user, isInitialisingFirebase: false }),
     )
@@ -91,21 +99,37 @@ class App extends React.Component<{}, State> {
     }
 
     return (
-      <Typography component="div">
-        <button type="button" onClick={this.handleAddEntry}>
-          Add
-        </button>
-        {isInputtingEntry && !entryBeingEdited && (
+      <div style={{ position: 'relative' }}>
+        <Dialog
+          fullScreen
+          TransitionComponent={TransitionUp}
+          open={isInputtingEntry && !entryBeingEdited}
+          onClose={() => this.setState({ isInputtingEntry: false })}
+        >
           <EntryInput onFinish={this.handleFinishAdding} />
-        )}
-        {isInputtingEntry && entryBeingEdited && (
+        </Dialog>
+        <Dialog
+          fullScreen
+          TransitionComponent={TransitionUp}
+          open={isInputtingEntry && !!entryBeingEdited}
+          onClose={() => this.setState({ isInputtingEntry: false })}
+        >
           <EntryInput
             onFinish={this.handleFinishEditing}
             item={entryBeingEdited}
           />
-        )}
+        </Dialog>
         <EntriesController onChangeEntry={this.handleChangeEntry} />
-      </Typography>
+        <Fab
+          style={{ position: 'absolute', right: '1rem' }}
+          onClick={this.handleAddEntry}
+          color="primary"
+          aria-label="Add"
+          classes={{}}
+        >
+          <AddIcon />
+        </Fab>
+      </div>
     )
   }
 }

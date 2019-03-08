@@ -3,8 +3,9 @@ export type ValueOf<T> = T[keyof T]
 export interface Item {
   id: string
   type: ItemTypes
-  time?: number
+  time: number
   note?: string
+  user?: string
 }
 
 export enum ItemTypes {
