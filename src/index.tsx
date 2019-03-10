@@ -1,11 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import Header from './components/header/Header'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import purple from '@material-ui/core/colors/purple'
-import green from '@material-ui/core/colors/green'
+import blueGrey from '@material-ui/core/colors/blueGrey'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
 const theme = createMuiTheme({
@@ -16,9 +17,9 @@ const theme = createMuiTheme({
       dark: purple[700],
     },
     secondary: {
-      light: green[300],
-      main: green[500],
-      dark: green[700],
+      light: blueGrey[300],
+      main: blueGrey[500],
+      dark: blueGrey[700],
     },
   },
   typography: {
@@ -26,11 +27,25 @@ const theme = createMuiTheme({
   },
 })
 
-ReactDOM.render(
+const UnknownRoute = () => <h1>Oops, this page couldn't be found</h1>
+
+const Routes = () => (
   <MuiThemeProvider theme={theme}>
     <CssBaseline />
-    <App />
-  </MuiThemeProvider>,
+    <Header />
+    <Switch>
+      <Route exact path="/">
+        <App />
+      </Route>
+      <Route path="*" component={UnknownRoute} />
+    </Switch>
+  </MuiThemeProvider>
+)
+
+ReactDOM.render(
+  <BrowserRouter>
+    <Routes />
+  </BrowserRouter>,
   document.getElementById('root'),
 )
 

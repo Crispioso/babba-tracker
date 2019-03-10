@@ -51,7 +51,7 @@ class EntriesController extends React.Component<Props, State> {
     const { date } = this.state
     return (
       <>
-        <DatePicker onChange={this.handleDateChange} />
+        {/* <DatePicker onChange={this.handleDateChange} /> */}
         <Entries
           date={date}
           onChangeEntry={onChangeEntry}

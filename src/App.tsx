@@ -1,5 +1,6 @@
 import React from 'react'
 import 'typeface-roboto'
+import styled from 'styled-components'
 import Firebase from './components/firebase/Firebase'
 import EntriesController from './components/entries/EntriesController'
 import EntryInput from './components/entry-input/EntryInput'
@@ -10,10 +11,33 @@ import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import { format } from 'date-fns'
+import { RouteComponentProps, withRouter } from 'react-router-dom'
+import parseQuery from 'query-string'
 
 function TransitionUp<P>(props: P) {
   return <Slide direction="up" {...props} />
 }
+
+const Wrapper = styled.div`
+  position: relative;
+`
+
+const Body = styled.div`
+  padding-right: 24px;
+  padding-left: 24px;
+
+  @media (max-width: 1280px) {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  @media (max-width: 976px) {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+`
 
 type State = {
   isInitialisingFirebase: boolean
@@ -22,7 +46,9 @@ type State = {
   entryBeingEdited?: Items
 }
 
-class App extends React.Component<{}, State> {
+const today = format(new Date(), 'YYYY-MM-DD')
+
+class App extends React.Component<RouteComponentProps, State> {
   state: State = {
     isInitialisingFirebase: false,
     isInputtingEntry: false,
@@ -35,6 +61,14 @@ class App extends React.Component<{}, State> {
   unregisterAuthObserver: firebase.Unsubscribe | null = null
 
   async componentWillMount() {
+    const { history, location } = this.props
+
+    const queries = parseQuery.parse(location.search)
+    if (queries.date == null) {
+      history.replace(`?date=${today}`)
+      return
+    }
+
     this.signInConfig = {
       signInFlow: 'popup',
       signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
@@ -86,7 +120,18 @@ class App extends React.Component<{}, State> {
     } = this.state
 
     if (isInitialisingFirebase) {
-      return <div>Loading...</div>
+      return (
+        <div
+          style={{
+            display: 'flex',
+            marginTop: '5rem',
+          }}
+        >
+          <CircularProgress
+            style={{ marginRight: 'auto', marginLeft: 'auto' }}
+          />
+        </div>
+      )
     }
 
     if (!isSignedIn) {
@@ -99,7 +144,7 @@ class App extends React.Component<{}, State> {
     }
 
     return (
-      <div style={{ position: 'relative' }}>
+      <Body>
         <Dialog
           fullScreen
           TransitionComponent={TransitionUp}
@@ -121,17 +166,17 @@ class App extends React.Component<{}, State> {
         </Dialog>
         <EntriesController onChangeEntry={this.handleChangeEntry} />
         <Fab
-          style={{ position: 'absolute', right: '1rem' }}
+          style={{ position: 'fixed', right: '1.5rem', bottom: '1.5rem' }}
           onClick={this.handleAddEntry}
-          color="primary"
+          color="secondary"
           aria-label="Add"
           classes={{}}
         >
           <AddIcon />
         </Fab>
-      </div>
+      </Body>
     )
   }
 }
 
-export default App
+export default withRouter(App)

@@ -1,9 +1,7 @@
 import * as React from 'react'
 import { Feed, Items, Nappy, ItemTypes } from '../../types'
 import { format } from 'date-fns'
-import { withStyles, Theme } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
-import ListSubheader from '@material-ui/core/ListSubheader'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -11,14 +9,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CreateIcon from '@material-ui/icons/Create'
-
-const styles = ({ palette }: Theme) => ({
-  root: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: palette.background.paper,
-  },
-})
+import { Typography } from '@material-ui/core'
 
 type Props = {
   onChangeEntry: (item: Items) => void
@@ -67,36 +58,53 @@ class Entries extends React.Component<Props, {}> {
   renderSortedEntries = () => {
     const { nappies, feeds, date, onChangeEntry, removeEntry } = this.props
     const items = [...nappies, ...feeds]
+
+    if (items.length === 0) {
+      return (
+        <>
+          <Typography
+            style={{ fontSize: '2rem', marginBottom: '3rem' }}
+            variant="h2"
+          >
+            {format(date, 'dddd Do MMMM')}
+          </Typography>
+          <Typography style={{ fontSize: '1.5rem' }} variant="h3">
+            Nothing today
+          </Typography>
+        </>
+      )
+    }
+
     items.sort((itemA, itemB) => itemA.time - itemB.time)
     return (
-      <List
-        subheader={
-          <ListSubheader component="h1">
-            {format(date, 'dddd Do MMMM')}
-          </ListSubheader>
-        }
-      >
-        {items.map(item => (
-          <ListItem key={item.id}>
-            <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
-            <ListItemText
-              primary={this.renderEntryDate(item)}
-              secondary={item.note}
-            />
-            <ListItemSecondaryAction>
-              <IconButton
-                onClick={() => onChangeEntry(item)}
-                aria-label="Delete"
-              >
-                <CreateIcon />
-              </IconButton>
-              <IconButton onClick={() => removeEntry(item)} aria-label="Delete">
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        ))}
-      </List>
+      <>
+        <Typography variant="h2">{format(date, 'dddd Do MMMM')}</Typography>
+        <List>
+          {items.map(item => (
+            <ListItem key={item.id}>
+              <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
+              <ListItemText
+                primary={this.renderEntryDate(item)}
+                secondary={item.note}
+              />
+              <ListItemSecondaryAction>
+                <IconButton
+                  onClick={() => onChangeEntry(item)}
+                  aria-label="Delete"
+                >
+                  <CreateIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => removeEntry(item)}
+                  aria-label="Delete"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </>
     )
   }
 
@@ -105,4 +113,4 @@ class Entries extends React.Component<Props, {}> {
   }
 }
 
-export default withStyles(styles)(Entries)
+export default Entries
