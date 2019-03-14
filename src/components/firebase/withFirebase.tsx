@@ -21,6 +21,13 @@ export interface FirebaseFunctionProps {
     startDate: Date
     endDate: Date
   }) => Array<() => void>
+  getDataByDate: ({
+    startDate,
+    endDate,
+  }: {
+    startDate: Date
+    endDate: Date
+  }) => Promise<void>
   addEntry: (item: Items) => void
   updateEntry: (item: Items) => void
   removeEntry: (item: Items) => void
@@ -64,6 +71,41 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       this.unsubscriptions.forEach(subscription => subscription())
     }
 
+    getDataByDate = async ({
+      startDate,
+      endDate,
+    }: {
+      startDate: Date
+      endDate: Date
+    }) => {
+      const newState = {}
+      const requests = dataKeysList.map(key => {
+        return this.firestore
+          .collection(key)
+          .where('time', '>', startDate.getTime())
+          .where(
+            'time',
+            '<',
+            endDate ? endDate.getTime() : new Date().getTime(),
+          )
+          .orderBy('time', 'desc')
+          .get()
+      })
+      try {
+        const responses = await Promise.all(requests)
+        responses.forEach(response =>
+          response.docs.forEach(doc => {
+            if (this.docAlreadyExists(doc)) return
+            this.setState((state: State) =>
+              this.addDataReducer(doc.id, doc.data(), state),
+            )
+          }),
+        )
+      } catch (error) {
+        console.error('Error getting data by date', error)
+      }
+    }
+
     subscribeByDate = ({
       startDate,
       endDate,
@@ -74,7 +116,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       const unsubscriptions: Array<() => void> = []
 
       this.setState({ feeds: [], nappies: [] })
-      dataKeysList.forEach(key => {
+      dataKeysList.map(key => {
         const subscription = this.firestore
           .collection(key)
           .where('time', '>', startDate.getTime())
@@ -88,7 +130,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
             snapshot
               .docChanges()
               .forEach(change => this.handleFirebaseChangeEvent(change))
-          })
+          }, this.handleSubscribeError)
 
         unsubscriptions.push(subscription)
       })
@@ -96,8 +138,19 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       return unsubscriptions
     }
 
+    handleSubscribeError = (error: Error) => {
+      console.error('Error getting snapshot from subscription', error)
+    }
+
     getTimestamp = (): number => {
       return new Date().getTime()
+    }
+
+    docAlreadyExists = (doc: firebase.firestore.DocumentData) => {
+      // On initial load this gets all existing documents but we already get them in one batch, so this
+      // ends up duplicating them. Which is why we have this check.
+      const items = this.getListFromType(doc.data().type)
+      return items.some((item: Items) => item.id === doc.id)
     }
 
     mapEventFeedDataToItem = (
@@ -238,13 +291,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
     handleFirebaseChangeEvent(change: firebase.firestore.DocumentChange) {
       switch (change.type) {
         case 'added':
-          // On initial load this gets all existing documents but we already get them in one batch, so this
-          // ends up duplicating them. Which is why we have this check.
-          const items = this.getListFromType(change.doc.data().type)
-          if (items.some((item: Items) => item.id === change.doc.id)) {
-            return
-          }
-
+          if (this.docAlreadyExists(change.doc)) return
           this.setState((state: State) =>
             this.addDataReducer(change.doc.id, change.doc.data(), state),
           )
@@ -311,6 +358,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         updateEntry: this.handleUpdateData,
         removeEntry: this.handleRemoveData,
         subscribeByDate: this.subscribeByDate,
+        getDataByDate: this.getDataByDate,
       }
       return (
         <ChildComponent {...dataFunctions} {...this.props} {...this.state} />
