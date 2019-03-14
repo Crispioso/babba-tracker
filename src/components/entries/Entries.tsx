@@ -78,7 +78,12 @@ class Entries extends React.Component<Props, {}> {
     items.sort((itemA, itemB) => itemA.time - itemB.time)
     return (
       <>
-        <Typography variant="h2">{format(date, 'dddd Do MMMM')}</Typography>
+        <Typography
+          style={{ fontSize: '2rem', marginBottom: '1rem' }}
+          variant="h2"
+        >
+          {format(date, 'dddd Do MMMM')}
+        </Typography>
         <List>
           {items.map(item => (
             <ListItem key={item.id}>

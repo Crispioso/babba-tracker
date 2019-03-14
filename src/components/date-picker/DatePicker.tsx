@@ -1,22 +1,14 @@
 import * as React from 'react'
 import { format } from 'date-fns'
 
-interface State {
-  date: Date
-}
-
 interface Props {
+  value: Date
   onChange: (date: Date) => void
 }
 
-export default class DatePicker extends React.Component<Props, State> {
-  state: State = {
-    date: new Date(),
-  }
-
+export default class DatePicker extends React.Component<Props, {}> {
   handleChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
     const date = event.currentTarget.valueAsDate
-    this.setState({ date })
     this.props.onChange(date)
   }
 
@@ -25,8 +17,8 @@ export default class DatePicker extends React.Component<Props, State> {
   }
 
   render() {
-    const { date } = this.state
-    const dateString = this.convertDateToInputValue(date)
+    const { value } = this.props
+    const dateString = this.convertDateToInputValue(value)
     return (
       <>
         <label htmlFor="datepicker">Calendar</label>

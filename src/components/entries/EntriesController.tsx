@@ -1,18 +1,13 @@
 import * as React from 'react'
-import {
-  withRouter,
-  BrowserRouterProps,
-  RouteComponentProps,
-} from 'react-router-dom'
+import { withRouter, RouteComponentProps } from 'react-router-dom'
 import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
 } from '../firebase/withFirebase'
 import Entries from './Entries'
-import DatePicker from '../date-picker/DatePicker'
 import { Items } from '../../types'
 import { startOfDay, endOfDay } from 'date-fns'
-import queryString from 'query-string'
+import { getDateFromLocation } from '../../utils'
 
 type State = {
   unsubscriptions: Array<() => void>
@@ -32,14 +27,8 @@ class EntriesController extends React.Component<Props, State> {
   }
 
   componentWillMount() {
-    const { search } = this.props.location
-    let { date = '' } = queryString.parse(search)
-
-    if (date instanceof Array) {
-      date = date[0]
-    }
-
-    const todaysDate = new Date(date)
+    const { location } = this.props
+    const todaysDate = getDateFromLocation(location)
     const unsubscriptions = this.props.subscribeByDate({
       startDate: startOfDay(todaysDate),
       endDate: endOfDay(todaysDate),
