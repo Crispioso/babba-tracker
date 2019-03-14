@@ -1,4 +1,9 @@
 import * as React from 'react'
+import {
+  withRouter,
+  BrowserRouterProps,
+  RouteComponentProps,
+} from 'react-router-dom'
 import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
@@ -7,16 +12,18 @@ import Entries from './Entries'
 import DatePicker from '../date-picker/DatePicker'
 import { Items } from '../../types'
 import { startOfDay, endOfDay } from 'date-fns'
+import queryString from 'query-string'
 
 type State = {
   unsubscriptions: Array<() => void>
   date: Date
 }
 
-type Props = FirebaseFunctionProps &
-  FirebaseData & {
-    onChangeEntry: (item: Items) => void
-  }
+type ExternalProps = FirebaseFunctionProps & FirebaseData & RouteComponentProps
+
+type Props = ExternalProps & {
+  onChangeEntry: (item: Items) => void
+}
 
 class EntriesController extends React.Component<Props, State> {
   state: State = {
@@ -25,11 +32,19 @@ class EntriesController extends React.Component<Props, State> {
   }
 
   componentWillMount() {
+    const { search } = this.props.location
+    let { date = '' } = queryString.parse(search)
+
+    if (date instanceof Array) {
+      date = date[0]
+    }
+
+    const todaysDate = new Date(date)
     const unsubscriptions = this.props.subscribeByDate({
-      startDate: startOfDay(new Date()),
-      endDate: endOfDay(new Date()),
+      startDate: startOfDay(todaysDate),
+      endDate: endOfDay(todaysDate),
     })
-    this.setState({ unsubscriptions })
+    this.setState({ unsubscriptions, date: todaysDate })
   }
 
   handleDateChange = (newDate: Date) => {
@@ -64,4 +79,4 @@ class EntriesController extends React.Component<Props, State> {
   }
 }
 
-export default withFirebase()(EntriesController)
+export default withRouter(withFirebase()(EntriesController))
