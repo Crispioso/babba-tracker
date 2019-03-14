@@ -8,6 +8,8 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import purple from '@material-ui/core/colors/purple'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import CssBaseline from '@material-ui/core/CssBaseline'
+import { MuiPickersUtilsProvider } from 'material-ui-pickers'
+import DateFnsUtils from '@date-io/date-fns'
 
 const theme = createMuiTheme({
   palette: {
@@ -30,16 +32,18 @@ const theme = createMuiTheme({
 const UnknownRoute = () => <h1>Oops, this page couldn't be found</h1>
 
 const Routes = () => (
-  <MuiThemeProvider theme={theme}>
-    <CssBaseline />
-    <Header />
-    <Switch>
-      <Route exact path="/">
-        <App />
-      </Route>
-      <Route path="*" component={UnknownRoute} />
-    </Switch>
-  </MuiThemeProvider>
+  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <Header />
+      <Switch>
+        <Route exact path="/">
+          <App />
+        </Route>
+        <Route path="*" component={UnknownRoute} />
+      </Switch>
+    </MuiThemeProvider>
+  </MuiPickersUtilsProvider>
 )
 
 ReactDOM.render(

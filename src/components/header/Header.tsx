@@ -2,8 +2,7 @@ import * as React from 'react'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
 import AppBar from '@material-ui/core/AppBar'
 import styled from 'styled-components'
-import { Typography, Toolbar, IconButton } from '@material-ui/core'
-import CalendarToday from '@material-ui/icons/CalendarToday'
+import { Typography, Toolbar } from '@material-ui/core'
 import DatePicker from '../date-picker/DatePicker'
 import { format } from 'date-fns'
 import { getDateFromLocation } from '../../utils'
@@ -36,9 +35,9 @@ class Header extends React.Component<RouteComponentProps, {}> {
           </Typography>
           <DatePicker value={date} onChange={this.handleDateChange} />
           {/* TODO Show DatePicker on click */}
-          <IconButton color="inherit">
+          {/* <IconButton color="inherit">
             <CalendarToday />
-          </IconButton>
+          </IconButton> */}
         </Container>
       </AppBar>
     )

@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
-import CircularProgress from '@material-ui/core/CircularProgress'
 import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
@@ -31,25 +30,37 @@ class EntriesController extends React.Component<Props, State> {
 
   componentWillMount = async () => {
     const { location, getDataByDate, subscribeByDate } = this.props
-    const todaysDate = getDateFromLocation(location)
+    const date = getDateFromLocation(location)
     const unsubscriptions = subscribeByDate({
-      startDate: startOfDay(todaysDate),
-      endDate: endOfDay(todaysDate),
+      startDate: startOfDay(date),
+      endDate: endOfDay(date),
     })
 
-    this.setState({ unsubscriptions, date: todaysDate, isLoading: true })
+    this.setState({ unsubscriptions, date, isLoading: true })
 
     await getDataByDate({
-      startDate: startOfDay(todaysDate),
-      endDate: endOfDay(todaysDate),
+      startDate: startOfDay(date),
+      endDate: endOfDay(date),
     })
 
     this.setState({ isLoading: false })
   }
 
-  handleDateChange = (newDate: Date) => {
+  componentWillReceiveProps = (nextProps: Props) => {
+    const { location } = nextProps
+    const date = getDateFromLocation(this.props.location)
+    const nextDate = getDateFromLocation(location)
+
+    if (date.getTime() === nextDate.getTime()) {
+      return
+    }
+
+    this.handleDateChange(nextDate)
+  }
+
+  handleDateChange = async (newDate: Date) => {
     const { unsubscriptions } = this.state
-    const { subscribeByDate } = this.props
+    const { subscribeByDate, getDataByDate } = this.props
 
     unsubscriptions.forEach(unsubscription => unsubscription())
 
@@ -58,38 +69,33 @@ class EntriesController extends React.Component<Props, State> {
       endDate: endOfDay(newDate),
     })
 
-    this.setState({ unsubscriptions: newUnsubscriptions, date: newDate })
+    this.setState({
+      unsubscriptions: newUnsubscriptions,
+      date: newDate,
+      isLoading: true,
+    })
+
+    await getDataByDate({
+      startDate: startOfDay(newDate),
+      endDate: endOfDay(newDate),
+    })
+
+    this.setState({ isLoading: false })
   }
 
   render() {
     const { onChangeEntry, removeEntry, feeds, nappies } = this.props
     const { date, isLoading } = this.state
 
-    if (isLoading) {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            marginTop: '5rem',
-          }}
-        >
-          <CircularProgress
-            style={{ marginRight: 'auto', marginLeft: 'auto' }}
-          />
-        </div>
-      )
-    }
-
     return (
-      <>
-        <Entries
-          date={date}
-          onChangeEntry={onChangeEntry}
-          removeEntry={removeEntry}
-          feeds={feeds}
-          nappies={nappies}
-        />
-      </>
+      <Entries
+        isLoading={isLoading}
+        date={date}
+        onChangeEntry={onChangeEntry}
+        removeEntry={removeEntry}
+        feeds={feeds}
+        nappies={nappies}
+      />
     )
   }
 }

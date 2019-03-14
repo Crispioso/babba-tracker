@@ -10,6 +10,7 @@ import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CreateIcon from '@material-ui/icons/Create'
 import { Typography } from '@material-ui/core'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 type Props = {
   onChangeEntry: (item: Items) => void
@@ -17,6 +18,7 @@ type Props = {
   date: Date
   feeds: Feed[]
   nappies: Nappy[]
+  isLoading: boolean
 }
 
 class Entries extends React.Component<Props, {}> {
@@ -56,8 +58,38 @@ class Entries extends React.Component<Props, {}> {
   }
 
   renderSortedEntries = () => {
-    const { nappies, feeds, date, onChangeEntry, removeEntry } = this.props
+    const {
+      nappies,
+      feeds,
+      date,
+      onChangeEntry,
+      removeEntry,
+      isLoading,
+    } = this.props
     const items = [...nappies, ...feeds]
+
+    if (isLoading) {
+      return (
+        <>
+          <Typography
+            style={{ fontSize: '2rem', marginBottom: '3rem' }}
+            variant="h2"
+          >
+            {format(date, 'dddd Do MMMM')}
+          </Typography>
+          <div
+            style={{
+              display: 'flex',
+              marginTop: '5rem',
+            }}
+          >
+            <CircularProgress
+              style={{ marginRight: 'auto', marginLeft: 'auto' }}
+            />
+          </div>
+        </>
+      )
+    }
 
     if (items.length === 0) {
       return (
