@@ -6,6 +6,13 @@ import withFirebase, {
 import { Units, ItemTypes, Items } from '../../types'
 import uuid from 'uuid/v4'
 import { format } from 'date-fns'
+import {
+  Input,
+  FormControl,
+  InputLabel,
+  TextField,
+  Button,
+} from '@material-ui/core'
 
 type Props = FirebaseFunctionProps &
   FirebaseData & {
@@ -24,13 +31,13 @@ const defaultState: State = {
   amount: '',
   unit: Units.Millilitres,
   note: '',
-  time: 0,
+  time: new Date().getTime(),
 }
 
 class FeedInput extends React.Component<Props, State> {
   state: State = defaultState
 
-  componentDidMount() {
+  componentWillMount() {
     const { item } = this.props
     if (item && item.type == ItemTypes.Feed) {
       this.setState({ ...item })
@@ -78,7 +85,7 @@ class FeedInput extends React.Component<Props, State> {
     this.setState({ time: new Date(event.currentTarget.value).getTime() })
   }
 
-  handleAmountChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+  handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value
     if (value == null) {
       return
@@ -87,7 +94,7 @@ class FeedInput extends React.Component<Props, State> {
     this.setState({ amount: value })
   }
 
-  handleUnitChange = (event: React.SyntheticEvent<HTMLSelectElement>) => {
+  handleUnitChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     let { value } = event.currentTarget
 
     switch (value) {
@@ -103,7 +110,7 @@ class FeedInput extends React.Component<Props, State> {
     }
   }
 
-  handleNoteChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+  handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value
     if (value == null) {
       return
@@ -113,62 +120,70 @@ class FeedInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { onFinish } = this.props
     const { amount, unit, note, time } = this.state
 
     const ISOstring = new Date(time).toISOString()
-    const strippedTimeString = ISOstring.substring(0, ISOstring.length - 1)
+    const strippedTimeString = ISOstring.substring(0, ISOstring.length - 5)
 
     return (
       <>
-        <button type="button" onClick={this.handleClear}>
+        {/* <button type="button" onClick={this.handleClear}>
           Clear
-        </button>
+        </button> */}
         <form onSubmit={this.handleSubmit}>
-          {time && (
-            <div>
-              <label htmlFor="feed-date-time">When</label>
-              <input
-                value={strippedTimeString}
-                type="datetime-local"
-                id="feed-date-time"
-                onChange={this.handleDateChange}
-              />
-            </div>
-          )}
-          <div>
-            <label htmlFor={'feed-amount'}>Amount</label>
-            <input
-              onChange={this.handleAmountChange}
-              required
-              id={'feed-amount'}
+          <TextField
+            style={{ marginBottom: '1.5rem' }}
+            id="datetime-local"
+            label="When"
+            type="datetime-local"
+            value={strippedTimeString}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <FormControl style={{ marginBottom: '2rem' }}>
+            <InputLabel htmlFor="feed-amount">Amount</InputLabel>
+            <Input
+              style={{ marginBottom: '1.5rem' }}
               type="number"
               value={amount}
+              id="feed-amount"
+              onChange={this.handleAmountChange}
             />
-          </div>
-          <div>
-            <label htmlFor={'feed-unit'}>Unit</label>
-            <select
-              required
-              name={'feed-unit'}
-              id={'feed-unit'}
-              onChange={this.handleUnitChange}
+            <TextField
+              id="feed-unit"
+              label="Unit"
+              style={{ marginBottom: '1.5rem' }}
+              SelectProps={{
+                native: true,
+              }}
+              select
               value={unit}
+              onChange={this.handleUnitChange}
             >
-              <option value={Units.Millilitres}>{Units.Millilitres}</option>
-              <option value={Units.FluidOz}>{Units.FluidOz}</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor={'feed-note'}>Note</label>
-            <input
-              onChange={this.handleNoteChange}
-              id={'feed-note'}
-              type="text"
+              <option key={Units.Millilitres} value={Units.Millilitres}>
+                {Units.Millilitres}
+              </option>
+              <option key={Units.FluidOz} value={Units.FluidOz}>
+                {Units.FluidOz}
+              </option>
+            </TextField>
+            <TextField
+              id="feed-note"
+              label="Note"
+              style={{ marginBottom: '1.5rem' }}
+              multiline
+              fullWidth
+              rowsMax="4"
               value={note}
+              onChange={this.handleNoteChange}
             />
+          </FormControl>
+          <div>
+            <Button type="submit" variant="contained" color="secondary">
+              Save
+            </Button>
           </div>
-          <button type="submit">Submit</button>
         </form>
       </>
     )

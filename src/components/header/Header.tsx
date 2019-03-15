@@ -34,10 +34,6 @@ class Header extends React.Component<RouteComponentProps, {}> {
             Evelyn tracker
           </Typography>
           <DatePicker value={date} onChange={this.handleDateChange} />
-          {/* TODO Show DatePicker on click */}
-          {/* <IconButton color="inherit">
-            <CalendarToday />
-          </IconButton> */}
         </Container>
       </AppBar>
     )

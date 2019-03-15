@@ -28,19 +28,19 @@ type Props = {
 
 type State = {
   selectedInputType: ItemTypes
-  disableSelection: boolean
+  isEditingItem: boolean
 }
 
 class EntryInput extends React.Component<Props, State> {
   state: State = {
     selectedInputType: ItemTypes.Feed,
-    disableSelection: false,
+    isEditingItem: false,
   }
 
   componentDidMount() {
     const { item } = this.props
     if (item) {
-      this.setState({ disableSelection: true, selectedInputType: item.type })
+      this.setState({ isEditingItem: true, selectedInputType: item.type })
     }
   }
 
@@ -75,7 +75,7 @@ class EntryInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { disableSelection, selectedInputType } = this.state
+    const { isEditingItem, selectedInputType } = this.state
 
     return (
       <Wrapper>
@@ -84,7 +84,7 @@ class EntryInput extends React.Component<Props, State> {
             variant="h1"
             style={{ fontSize: '2rem', marginBottom: '2.2rem' }}
           >
-            Add an entry
+            {isEditingItem ? 'Edit' : 'Add'} an entry
           </Typography>
           <IconButton
             style={{ position: 'absolute', top: '0.8rem', right: '0.8rem' }}
@@ -94,7 +94,7 @@ class EntryInput extends React.Component<Props, State> {
             <CloseSharp />
           </IconButton>
         </Header>
-        <FormControl>
+        <FormControl style={{ marginBottom: '1rem' }}>
           <FormLabel>Type</FormLabel>
           <RadioGroup
             aria-label="Type"
@@ -106,11 +106,13 @@ class EntryInput extends React.Component<Props, State> {
               value={ItemTypes.Feed}
               control={<Radio />}
               label="Feed"
+              disabled={isEditingItem}
             />
             <FormControlLabel
               value={ItemTypes.Nappy}
               control={<Radio />}
               label="Nappy"
+              disabled={isEditingItem}
             />
           </RadioGroup>
         </FormControl>
