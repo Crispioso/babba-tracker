@@ -46,7 +46,7 @@ type State = {
   entryBeingEdited?: Items
 }
 
-const today = format(new Date(), 'YYYY-MM-DD')
+const today = format(new Date(), 'yyyy-MM-dd')
 
 class App extends React.Component<RouteComponentProps, State> {
   state: State = {

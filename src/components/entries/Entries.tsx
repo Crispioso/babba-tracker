@@ -21,6 +21,8 @@ type Props = {
   isLoading: boolean
 }
 
+const dateFormat = 'iiii do LLL'
+
 class Entries extends React.Component<Props, {}> {
   renderEntryDate = (item: Items) => {
     if (item.time == null) {
@@ -75,7 +77,7 @@ class Entries extends React.Component<Props, {}> {
             style={{ fontSize: '2rem', marginBottom: '3rem' }}
             variant="h2"
           >
-            {format(date, 'dddd Do MMMM')}
+            {format(date, dateFormat)}
           </Typography>
           <div
             style={{
@@ -98,7 +100,7 @@ class Entries extends React.Component<Props, {}> {
             style={{ fontSize: '2rem', marginBottom: '3rem' }}
             variant="h2"
           >
-            {format(date, 'dddd Do MMMM')}
+            {format(date, dateFormat)}
           </Typography>
           <Typography style={{ fontSize: '1.5rem' }} variant="h3">
             Nothing today
@@ -114,7 +116,7 @@ class Entries extends React.Component<Props, {}> {
           style={{ fontSize: '2rem', marginBottom: '1rem' }}
           variant="h2"
         >
-          {format(date, 'dddd Do MMMM')}
+          {format(date, dateFormat)}
         </Typography>
         <List>
           {items.map(item => (

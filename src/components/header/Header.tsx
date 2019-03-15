@@ -15,7 +15,7 @@ const Container = styled(Toolbar)`
 class Header extends React.Component<RouteComponentProps, {}> {
   handleDateChange = (date: Date) => {
     const { history } = this.props
-    const formattedDate = format(date, 'YYYY-MM-DD')
+    const formattedDate = format(date, 'yyyy-MM-dd')
     history.push(`?date=${formattedDate}`)
   }
 

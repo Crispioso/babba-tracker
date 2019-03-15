@@ -99,9 +99,6 @@ class EntryInput extends React.Component<Props, State> {
     const { isWee, isPoop, note } = this.state
     return (
       <>
-        <button type="button" onClick={onFinish}>
-          Close
-        </button>
         <button type="button" onClick={this.handleClear}>
           Clear
         </button>

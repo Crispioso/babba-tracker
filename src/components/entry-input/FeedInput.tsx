@@ -121,9 +121,6 @@ class FeedInput extends React.Component<Props, State> {
 
     return (
       <>
-        <button type="button" onClick={onFinish}>
-          Close
-        </button>
         <button type="button" onClick={this.handleClear}>
           Clear
         </button>
