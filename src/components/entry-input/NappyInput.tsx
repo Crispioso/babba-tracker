@@ -3,7 +3,7 @@ import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
 } from '../firebase/withFirebase'
-import { ItemTypes, Nappy, Items } from '../../types'
+import { ItemTypes, Items } from '../../types'
 import uuid from 'uuid/v4'
 import {
   FormControl,
@@ -15,6 +15,17 @@ import {
   FormHelperText,
   FormLabel,
 } from '@material-ui/core'
+import styled from 'styled-components'
+
+const StyledFormControl = styled(FormControl)`
+  margin-bottom: 2rem !important;
+
+  @media (max-width: 976px) {
+    & {
+      width: 100%;
+    }
+  }
+`
 
 type Props = FirebaseFunctionProps &
   FirebaseData & {
@@ -124,7 +135,7 @@ class EntryInput extends React.Component<Props, State> {
 
     return (
       <form onSubmit={this.handleSubmit}>
-        <FormControl style={{ marginBottom: '2rem' }}>
+        <StyledFormControl>
           <TextField
             style={{ marginBottom: '1.5rem' }}
             id="datetime-local"
@@ -137,7 +148,7 @@ class EntryInput extends React.Component<Props, State> {
             onChange={this.handleDateChange}
             required
           />
-          <FormGroup>
+          <FormGroup style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
             <FormLabel>Nappy contents 🤢</FormLabel>
             {error != null && error != '' && (
               <FormHelperText error>{error}</FormHelperText>
@@ -175,7 +186,7 @@ class EntryInput extends React.Component<Props, State> {
             value={note}
             onChange={this.handleNoteChange}
           />
-        </FormControl>
+        </StyledFormControl>
         <div>
           <Button type="submit" variant="contained" color="secondary">
             Save

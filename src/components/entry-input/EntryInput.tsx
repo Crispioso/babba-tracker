@@ -94,7 +94,7 @@ class EntryInput extends React.Component<Props, State> {
             <CloseSharp />
           </IconButton>
         </Header>
-        <FormControl style={{ marginBottom: '1rem' }}>
+        <FormControl style={{ marginBottom: '2rem' }}>
           <FormLabel>Type</FormLabel>
           <RadioGroup
             aria-label="Type"
