@@ -22,7 +22,7 @@ type Props = {
 }
 
 const dateFormat = 'iiii do LLL'
-const babyName = 'Evelyn'
+const babyName = 'Baby girl'
 
 class Entries extends React.Component<Props, {}> {
   renderTitle = (item: Items) => {

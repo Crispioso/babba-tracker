@@ -31,7 +31,7 @@ class Header extends React.Component<RouteComponentProps, {}> {
       >
         <Container>
           <Typography variant="h6" color="inherit" className="alignRight">
-            Evelyn tracker
+            Babba tracker
           </Typography>
           <DatePicker value={date} onChange={this.handleDateChange} />
         </Container>
