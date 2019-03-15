@@ -16,7 +16,7 @@ import {
 import styled from 'styled-components'
 
 const StyledFormControl = styled(FormControl)`
-  margin-bottom: 2rem;
+  margin-bottom: 2rem !important;
 
   @media (max-width: 976px) {
     & {
@@ -84,6 +84,7 @@ class FeedInput extends React.Component<Props, State> {
       amount,
       unit,
       note,
+      time,
     })
     onFinish()
   }
@@ -92,7 +93,7 @@ class FeedInput extends React.Component<Props, State> {
     this.setState(defaultState)
   }
 
-  handleDateChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+  handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ time: new Date(event.currentTarget.value).getTime() })
   }
 
@@ -148,6 +149,7 @@ class FeedInput extends React.Component<Props, State> {
             InputLabelProps={{
               shrink: true,
             }}
+            onChange={this.handleDateChange}
           />
           <div style={{ position: 'relative' }}>
             <InputLabel htmlFor="feed-amount">Amount</InputLabel>

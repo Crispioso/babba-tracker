@@ -24,12 +24,14 @@ type State = {
   isWee: boolean
   isPoop: boolean
   note?: string
+  time: number
 }
 
 const defaultState: State = {
   isWee: false,
   isPoop: false,
   note: '',
+  time: new Date().getTime(),
 }
 
 class EntryInput extends React.Component<Props, State> {
@@ -46,7 +48,7 @@ class EntryInput extends React.Component<Props, State> {
     event.preventDefault()
 
     const { item, updateEntry, addEntry, onFinish } = this.props
-    const { isWee, isPoop, note } = this.state
+    const { isWee, isPoop, note, time } = this.state
 
     if (!item) {
       addEntry({
@@ -55,7 +57,7 @@ class EntryInput extends React.Component<Props, State> {
         note,
         type: ItemTypes.Nappy,
         id: uuid(),
-        time: 0,
+        time,
       })
       onFinish()
       return
@@ -71,12 +73,17 @@ class EntryInput extends React.Component<Props, State> {
       isWee,
       isPoop,
       note,
+      time,
     })
     onFinish()
   }
 
   handleClear = () => {
     this.setState(defaultState)
+  }
+
+  handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ time: new Date(event.currentTarget.value).getTime() })
   }
 
   handleCheckboxChange = (
@@ -103,11 +110,24 @@ class EntryInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { isWee, isPoop, note } = this.state
+    const { isWee, isPoop, note, time } = this.state
+    const ISOstring = new Date(time).toISOString()
+    const strippedTimeString = ISOstring.substring(0, ISOstring.length - 5)
 
     return (
       <form onSubmit={this.handleSubmit}>
         <FormControl style={{ marginBottom: '2rem' }}>
+          <TextField
+            style={{ marginBottom: '1.5rem' }}
+            id="datetime-local"
+            label="When"
+            type="datetime-local"
+            value={strippedTimeString}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            onChange={this.handleDateChange}
+          />
           <FormGroup>
             <FormControlLabel
               control={
