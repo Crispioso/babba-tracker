@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "b3cc99f98e4d0567cf70",
-    "url": "/babba-tracker/static/js/main.b3cc99f9.chunk.js"
+    "revision": "35252766ed225c534c4d",
+    "url": "/babba-tracker/static/js/main.35252766.chunk.js"
   },
   {
     "revision": "778c12b18b0e1e88f5b6",
@@ -64,12 +64,12 @@ self.__precacheManifest = [
     "url": "/babba-tracker/static/media/roboto-latin-300italic.210a7c78.woff"
   },
   {
-    "revision": "bafb105baeb22d965c70fe52ba6b49d9",
-    "url": "/babba-tracker/static/media/roboto-latin-400.bafb105b.woff"
-  },
-  {
     "revision": "d8bcbe724fd6f4ba44d0ee6a2675890f",
     "url": "/babba-tracker/static/media/roboto-latin-400italic.d8bcbe72.woff2"
+  },
+  {
+    "revision": "bafb105baeb22d965c70fe52ba6b49d9",
+    "url": "/babba-tracker/static/media/roboto-latin-400.bafb105b.woff"
   },
   {
     "revision": "9680d5a0c32d2fd084e07bbc4c8b2923",
@@ -112,7 +112,7 @@ self.__precacheManifest = [
     "url": "/babba-tracker/static/media/roboto-latin-900italic.bc833e72.woff"
   },
   {
-    "revision": "afa2703ac4c35536e64d54eed7fb6a32",
+    "revision": "56077fb840b6f9e06d0ed3e12c4d61ec",
     "url": "/babba-tracker/index.html"
   }
 ];
