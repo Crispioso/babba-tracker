@@ -47,7 +47,7 @@ const Routes = () => (
 )
 
 ReactDOM.render(
-  <BrowserRouter>
+  <BrowserRouter basename="babba-tracker">
     <Routes />
   </BrowserRouter>,
   document.getElementById('root'),

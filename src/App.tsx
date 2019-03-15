@@ -66,7 +66,6 @@ class App extends React.Component<RouteComponentProps, State> {
     const queries = parseQuery.parse(location.search)
     if (queries.date == null) {
       history.replace(`?date=${today}`)
-      return
     }
 
     this.signInConfig = {
