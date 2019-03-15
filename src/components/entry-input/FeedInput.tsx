@@ -13,6 +13,17 @@ import {
   TextField,
   Button,
 } from '@material-ui/core'
+import styled from 'styled-components'
+
+const StyledFormControl = styled(FormControl)`
+  margin-bottom: 2rem;
+
+  @media (max-width: 976px) {
+    & {
+      width: 100%;
+    }
+  }
+`
 
 type Props = FirebaseFunctionProps &
   FirebaseData & {
@@ -126,11 +137,8 @@ class FeedInput extends React.Component<Props, State> {
     const strippedTimeString = ISOstring.substring(0, ISOstring.length - 5)
 
     return (
-      <>
-        {/* <button type="button" onClick={this.handleClear}>
-          Clear
-        </button> */}
-        <form onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmit}>
+        <StyledFormControl>
           <TextField
             style={{ marginBottom: '1.5rem' }}
             id="datetime-local"
@@ -141,51 +149,51 @@ class FeedInput extends React.Component<Props, State> {
               shrink: true,
             }}
           />
-          <FormControl style={{ marginBottom: '2rem' }}>
+          <div style={{ position: 'relative' }}>
             <InputLabel htmlFor="feed-amount">Amount</InputLabel>
             <Input
-              style={{ marginBottom: '1.5rem' }}
+              style={{ marginBottom: '1.5rem', width: '100%' }}
               type="number"
               value={amount}
               id="feed-amount"
               onChange={this.handleAmountChange}
             />
-            <TextField
-              id="feed-unit"
-              label="Unit"
-              style={{ marginBottom: '1.5rem' }}
-              SelectProps={{
-                native: true,
-              }}
-              select
-              value={unit}
-              onChange={this.handleUnitChange}
-            >
-              <option key={Units.Millilitres} value={Units.Millilitres}>
-                {Units.Millilitres}
-              </option>
-              <option key={Units.FluidOz} value={Units.FluidOz}>
-                {Units.FluidOz}
-              </option>
-            </TextField>
-            <TextField
-              id="feed-note"
-              label="Note"
-              style={{ marginBottom: '1.5rem' }}
-              multiline
-              fullWidth
-              rowsMax="4"
-              value={note}
-              onChange={this.handleNoteChange}
-            />
-          </FormControl>
-          <div>
-            <Button type="submit" variant="contained" color="secondary">
-              Save
-            </Button>
           </div>
-        </form>
-      </>
+          <TextField
+            id="feed-unit"
+            label="Unit"
+            style={{ marginBottom: '1.5rem' }}
+            SelectProps={{
+              native: true,
+            }}
+            select
+            value={unit}
+            onChange={this.handleUnitChange}
+          >
+            <option key={Units.Millilitres} value={Units.Millilitres}>
+              {Units.Millilitres}
+            </option>
+            <option key={Units.FluidOz} value={Units.FluidOz}>
+              {Units.FluidOz}
+            </option>
+          </TextField>
+          <TextField
+            id="feed-note"
+            label="Note"
+            style={{ marginBottom: '1.5rem' }}
+            multiline
+            fullWidth
+            rowsMax="4"
+            value={note}
+            onChange={this.handleNoteChange}
+          />
+        </StyledFormControl>
+        <div>
+          <Button type="submit" variant="contained" color="secondary">
+            Save
+          </Button>
+        </div>
+      </form>
     )
   }
 }

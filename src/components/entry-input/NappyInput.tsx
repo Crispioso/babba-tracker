@@ -5,6 +5,14 @@ import withFirebase, {
 } from '../firebase/withFirebase'
 import { ItemTypes, Nappy, Items } from '../../types'
 import uuid from 'uuid/v4'
+import {
+  FormControl,
+  Button,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
+  TextField,
+} from '@material-ui/core'
 
 type Props = FirebaseFunctionProps &
   FirebaseData & {
@@ -73,7 +81,7 @@ class EntryInput extends React.Component<Props, State> {
 
   handleCheckboxChange = (
     type: 'wee' | 'poop',
-    event: React.SyntheticEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const { checked } = event.currentTarget
 
@@ -85,7 +93,7 @@ class EntryInput extends React.Component<Props, State> {
     this.setState({ isPoop: checked })
   }
 
-  handleNoteChange = (event: React.SyntheticEvent<HTMLInputElement>) => {
+  handleNoteChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value
     if (value == null) {
       return
@@ -95,44 +103,52 @@ class EntryInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { onFinish } = this.props
     const { isWee, isPoop, note } = this.state
+
     return (
-      <>
-        <button type="button" onClick={this.handleClear}>
-          Clear
-        </button>
-        <form onSubmit={this.handleSubmit}>
-          <div>
-            <label htmlFor="is-wee-input">Wee</label>
-            <input
-              checked={isWee}
-              type="checkbox"
-              id="is-wee-input"
-              onChange={event => this.handleCheckboxChange('wee', event)}
+      <form onSubmit={this.handleSubmit}>
+        <FormControl style={{ marginBottom: '2rem' }}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isWee}
+                  onChange={event => this.handleCheckboxChange('wee', event)}
+                  id="is-wee-input"
+                  value="wee"
+                />
+              }
+              label="Wee"
             />
-          </div>
-          <div>
-            <label htmlFor="is-poop-input">Poop</label>
-            <input
-              checked={isPoop}
-              type="checkbox"
-              id="is-poop-input"
-              onChange={event => this.handleCheckboxChange('poop', event)}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isPoop}
+                  onChange={event => this.handleCheckboxChange('poop', event)}
+                  id="is-poop-input"
+                  value="poop"
+                />
+              }
+              label="Poop"
             />
-          </div>
-          <div>
-            <label htmlFor={'nappy-note'}>Note</label>
-            <input
-              onChange={this.handleNoteChange}
-              id={'nappy-note'}
-              type="text"
-              value={note}
-            />
-          </div>
-          <button type="submit">Submit</button>
-        </form>
-      </>
+          </FormGroup>
+          <TextField
+            id="nappy-note"
+            label="Note"
+            style={{ marginBottom: '1.5rem' }}
+            multiline
+            fullWidth
+            rowsMax="4"
+            value={note}
+            onChange={this.handleNoteChange}
+          />
+        </FormControl>
+        <div>
+          <Button type="submit" variant="contained" color="secondary">
+            Save
+          </Button>
+        </div>
+      </form>
     )
   }
 }
