@@ -44,6 +44,7 @@ export default class ADatePicker extends React.Component<Props, {}> {
           ref={this.dateInput}
           TextFieldComponent={FakeInput}
           autoOk={true}
+          showTodayButton={true}
         />
       </>
     )

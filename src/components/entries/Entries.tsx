@@ -22,8 +22,27 @@ type Props = {
 }
 
 const dateFormat = 'iiii do LLL'
+const babyName = 'Evelyn'
 
 class Entries extends React.Component<Props, {}> {
+  renderTitle = (item: Items) => {
+    switch (item.type) {
+      case ItemTypes.Feed: {
+        return `${babyName} drank ${item.amount}${item.unit}${
+          item.amount === '1' ? 's' : ''
+        }`
+      }
+      case ItemTypes.Nappy: {
+        return `${babyName} did a ${item.isWee ? 'wee' : ''}${
+          item.isWee && item.isPoop ? ' and a ' : ''
+        }${item.isPoop ? 'poop' : ''}`
+      }
+      default: {
+        return 'Unrecognised item 🤔'
+      }
+    }
+  }
+
   renderEntryDate = (item: Items) => {
     if (item.time == null) {
       return
@@ -123,13 +142,13 @@ class Entries extends React.Component<Props, {}> {
             <ListItem key={item.id}>
               <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
               <ListItemText
-                primary={this.renderEntryDate(item)}
-                secondary={item.note}
+                primary={this.renderTitle(item)}
+                secondary={this.renderEntryDate(item)}
               />
               <ListItemSecondaryAction>
                 <IconButton
                   onClick={() => onChangeEntry(item)}
-                  aria-label="Delete"
+                  aria-label="Edit"
                 >
                   <CreateIcon />
                 </IconButton>
