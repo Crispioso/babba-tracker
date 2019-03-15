@@ -12,6 +12,8 @@ import {
   FormGroup,
   FormControlLabel,
   TextField,
+  FormHelperText,
+  FormLabel,
 } from '@material-ui/core'
 
 type Props = FirebaseFunctionProps &
@@ -25,6 +27,7 @@ type State = {
   isPoop: boolean
   note?: string
   time: number
+  error?: string
 }
 
 const defaultState: State = {
@@ -49,6 +52,11 @@ class EntryInput extends React.Component<Props, State> {
 
     const { item, updateEntry, addEntry, onFinish } = this.props
     const { isWee, isPoop, note, time } = this.state
+
+    if (!isWee && !isPoop) {
+      this.setState({ error: "Baby must've done a wee or a poo" })
+      return
+    }
 
     if (!item) {
       addEntry({
@@ -110,7 +118,7 @@ class EntryInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { isWee, isPoop, note, time } = this.state
+    const { isWee, isPoop, note, time, error } = this.state
     const ISOstring = new Date(time).toISOString()
     const strippedTimeString = ISOstring.substring(0, ISOstring.length - 5)
 
@@ -127,8 +135,13 @@ class EntryInput extends React.Component<Props, State> {
               shrink: true,
             }}
             onChange={this.handleDateChange}
+            required
           />
           <FormGroup>
+            <FormLabel>Nappy contents 🤢</FormLabel>
+            {error != null && error != '' && (
+              <FormHelperText error>{error}</FormHelperText>
+            )}
             <FormControlLabel
               control={
                 <Checkbox

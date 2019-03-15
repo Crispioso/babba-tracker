@@ -5,13 +5,13 @@ import withFirebase, {
 } from '../firebase/withFirebase'
 import { Units, ItemTypes, Items } from '../../types'
 import uuid from 'uuid/v4'
-import { format } from 'date-fns'
 import {
   Input,
   FormControl,
   InputLabel,
   TextField,
   Button,
+  FormHelperText,
 } from '@material-ui/core'
 import styled from 'styled-components'
 
@@ -36,6 +36,7 @@ type State = {
   unit: Units
   note?: string
   time: number
+  error?: string
 }
 
 const defaultState: State = {
@@ -60,6 +61,11 @@ class FeedInput extends React.Component<Props, State> {
 
     const { item, updateEntry, addEntry, onFinish } = this.props
     const { amount, unit, note, time } = this.state
+
+    if (!amount) {
+      this.setState({ error: 'Must add an amount' })
+      return
+    }
 
     if (!item) {
       addEntry({
@@ -132,7 +138,7 @@ class FeedInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { amount, unit, note, time } = this.state
+    const { amount, unit, note, time, error } = this.state
 
     const ISOstring = new Date(time).toISOString()
     const strippedTimeString = ISOstring.substring(0, ISOstring.length - 5)
@@ -150,6 +156,7 @@ class FeedInput extends React.Component<Props, State> {
               shrink: true,
             }}
             onChange={this.handleDateChange}
+            required
           />
           <div style={{ position: 'relative' }}>
             <InputLabel htmlFor="feed-amount">Amount</InputLabel>
@@ -160,6 +167,9 @@ class FeedInput extends React.Component<Props, State> {
               id="feed-amount"
               onChange={this.handleAmountChange}
             />
+            {error != null && error != '' && (
+              <FormHelperText error>{error}</FormHelperText>
+            )}
           </div>
           <TextField
             id="feed-unit"
