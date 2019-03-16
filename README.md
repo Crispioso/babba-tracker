@@ -22,4 +22,5 @@ npm start
 - ~~Enable it to 'Add to homescreen'~~
 - ~~Add a 'sleep' item~~
 - Add helpers, like 'When was last feed'
+- Show when data change is local only 
 - Store a revision history for items
