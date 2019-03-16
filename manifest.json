@@ -1,6 +1,6 @@
 {
-  "short_name": "Evelyn Tracker",
-  "name": "Evelyn Tracker",
+  "short_name": "Babba Tracker",
+  "name": "Babba Tracker",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,9 +8,14 @@
       "type": "image/x-icon"
     },
     {
-      "src": "icon-24.svg",
-      "sizes": "24x24",
-      "type": "image/svg"
+      "src": "babba-196.png",
+      "sizes": "196x196",
+      "type": "image/png"
+    },
+    {
+      "src": "babba-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ],
   "start_url": "/",
