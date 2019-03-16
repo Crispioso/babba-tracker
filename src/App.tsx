@@ -20,10 +20,6 @@ function TransitionUp<P>(props: P) {
   return <Slide direction="up" {...props} />
 }
 
-const Wrapper = styled.div`
-  position: relative;
-`
-
 const Body = styled.div`
   padding-right: 24px;
   padding-left: 24px;
@@ -61,6 +57,10 @@ class App extends React.Component<RouteComponentProps, State> {
   unregisterAuthObserver: firebase.Unsubscribe | null = null
 
   async componentWillMount() {
+    window.addEventListener('beforeinstallprompt', event => {
+      console.log(event)
+    })
+
     const { history, location } = this.props
 
     const queries = parseQuery.parse(location.search)
