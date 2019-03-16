@@ -18,6 +18,7 @@ npm start
 
 ## To-do
 
-- Add a favicon
-- Enable it to 'Add to homescreen'
+- ~~Add a favicon~~
+- ~~Enable it to 'Add to homescreen'~~
+- Add a 'sleep' item
 - Store a revision history for items.
