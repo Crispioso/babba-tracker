@@ -7,6 +7,7 @@ import FormLabel from '@material-ui/core/FormLabel'
 import { CloseSharp } from '@material-ui/icons'
 import FeedInput from './FeedInput'
 import NappyInput from './NappyInput'
+import SleepInput from './SleepInput'
 import { ItemTypes, Items } from '../../types'
 import { Typography, IconButton } from '@material-ui/core'
 import styled from 'styled-components'
@@ -52,6 +53,9 @@ class EntryInput extends React.Component<Props, State> {
       case ItemTypes.Nappy:
         this.setState({ selectedInputType: ItemTypes.Nappy })
         break
+      case ItemTypes.Sleep:
+        this.setState({ selectedInputType: ItemTypes.Sleep })
+        break
       default:
         console.warn('Unrecognised update type selection', value)
         this.setState({ selectedInputType: ItemTypes.Feed })
@@ -71,6 +75,8 @@ class EntryInput extends React.Component<Props, State> {
         return <FeedInput {...this.props} />
       case ItemTypes.Nappy:
         return <NappyInput {...this.props} />
+      case ItemTypes.Sleep:
+        return <SleepInput {...this.props} />
     }
   }
 
@@ -112,6 +118,12 @@ class EntryInput extends React.Component<Props, State> {
               value={ItemTypes.Nappy}
               control={<Radio />}
               label="Nappy"
+              disabled={isEditingItem}
+            />
+            <FormControlLabel
+              value={ItemTypes.Sleep}
+              control={<Radio />}
+              label="Sleep"
               disabled={isEditingItem}
             />
           </RadioGroup>

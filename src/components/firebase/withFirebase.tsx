@@ -1,16 +1,18 @@
 import * as React from 'react'
 import firebase from 'firebase'
 import Firebase, { firestore } from './Firebase'
-import { Feed, Items, ItemTypes, Nappy } from '../../types'
+import { Feed, Items, ItemTypes, Nappy, Sleep } from '../../types'
 
 export enum DataKeys {
   Feeds = 'feeds',
   Nappies = 'nappies',
+  Sleeps = 'sleeps',
 }
 
 export type FirebaseData = {
   feeds: Feed[]
   nappies: Nappy[]
+  sleeps: Sleep[]
 }
 
 export interface FirebaseFunctionProps {
@@ -36,9 +38,10 @@ export interface FirebaseFunctionProps {
 export type State = {
   feeds: Feed[]
   nappies: Nappy[]
+  sleeps: Sleep[]
 }
 
-const dataKeysList = [DataKeys.Feeds, DataKeys.Nappies]
+const dataKeysList = [DataKeys.Feeds, DataKeys.Nappies, DataKeys.Sleeps]
 
 const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
   ChildComponent: React.ComponentType<
@@ -52,6 +55,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
     state: State = {
       feeds: Firebase.getFeeds(),
       nappies: Firebase.getNappies(),
+      sleeps: Firebase.getSleeps(),
     }
     firestore = firestore
     unsubscriptions: Array<() => void> = []
@@ -78,7 +82,6 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       startDate: Date
       endDate: Date
     }) => {
-      const newState = {}
       const requests = dataKeysList.map(key => {
         return this.firestore
           .collection(key)
@@ -115,7 +118,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
     }) => {
       const unsubscriptions: Array<() => void> = []
 
-      this.setState({ feeds: [], nappies: [] })
+      this.setState({ feeds: [], nappies: [], sleeps: [] })
       dataKeysList.map(key => {
         const subscription = this.firestore
           .collection(key)
@@ -177,18 +180,30 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       time: doc.time != null ? doc.time : undefined,
     })
 
+    mapEventSleepDataToItem = (
+      ID: string,
+      doc: firebase.firestore.DocumentData,
+    ): Sleep => ({
+      id: ID,
+      type: ItemTypes.Sleep,
+      endTime: doc.endTime,
+      note: doc.note,
+      time: doc.time != null ? doc.time : undefined,
+    })
+
     addDataReducer(
       ID: string,
       doc: firebase.firestore.DocumentData,
       state: State,
     ) {
-      const { feeds, nappies } = state
+      const { feeds, nappies, sleeps } = state
 
       if (doc.type == ItemTypes.Feed) {
         const feed: Feed = this.mapEventFeedDataToItem(ID, doc)
         return {
           feeds: [...feeds, feed],
           nappies: nappies,
+          sleeps: sleeps,
         }
       }
 
@@ -197,11 +212,21 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         return {
           feeds: feeds,
           nappies: [...nappies, nappy],
+          sleeps: sleeps,
+        }
+      }
+
+      if (doc.type == ItemTypes.Sleep) {
+        const sleep: Sleep = this.mapEventSleepDataToItem(ID, doc)
+        return {
+          feeds: feeds,
+          nappies: nappies,
+          sleeps: [...sleeps, sleep],
         }
       }
 
       console.error('Unrecognised doc type added to firebase:', doc.type)
-      return { feeds, nappies }
+      return { feeds, nappies, sleeps }
     }
 
     updateDataReducer(
@@ -209,7 +234,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       doc: firebase.firestore.DocumentData,
       state: State,
     ) {
-      const { feeds, nappies } = state
+      const { feeds, nappies, sleeps } = state
 
       if (doc.type == ItemTypes.Feed) {
         const feed: Feed = this.mapEventFeedDataToItem(ID, doc)
@@ -221,6 +246,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
             return feed
           }),
           nappies,
+          sleeps,
         }
       }
 
@@ -234,11 +260,26 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
             }
             return nappy
           }),
+          sleeps,
+        }
+      }
+
+      if (doc.type == ItemTypes.Sleep) {
+        const sleep: Sleep = this.mapEventSleepDataToItem(ID, doc)
+        return {
+          feeds,
+          nappies: nappies,
+          sleeps: sleeps.map(item => {
+            if (item.id != ID) {
+              return item
+            }
+            return sleep
+          }),
         }
       }
 
       console.error('Unrecognised doc type updated in firebase')
-      return { feeds, nappies }
+      return { feeds, nappies, sleeps }
     }
 
     removeDataReducer(
@@ -246,12 +287,13 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       doc: firebase.firestore.DocumentData,
       state: State,
     ) {
-      const { feeds, nappies } = state
+      const { feeds, nappies, sleeps } = state
 
       if (doc.type == ItemTypes.Feed) {
         return {
           feeds: feeds.filter(item => item.id != ID),
           nappies,
+          sleeps,
         }
       }
 
@@ -259,11 +301,20 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         return {
           feeds,
           nappies: nappies.filter(item => item.id != ID),
+          sleeps,
+        }
+      }
+
+      if (doc.type == ItemTypes.Sleep) {
+        return {
+          feeds,
+          nappies,
+          sleeps: sleeps.filter(item => item.id != ID),
         }
       }
 
       console.error('Unrecognised doc type removed from firebase')
-      return { feeds, nappies }
+      return { feeds, nappies, sleeps }
     }
 
     getKeyFromType(type: ItemTypes): string {
@@ -272,6 +323,8 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
           return DataKeys.Feeds
         case ItemTypes.Nappy:
           return DataKeys.Nappies
+        case ItemTypes.Sleep:
+          return DataKeys.Sleeps
         default:
           return 'unknown_type'
       }
@@ -283,6 +336,8 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
           return this.state[DataKeys.Feeds]
         case ItemTypes.Nappy:
           return this.state[DataKeys.Nappies]
+        case ItemTypes.Sleep:
+          return this.state[DataKeys.Sleeps]
         default:
           return []
       }
@@ -332,6 +387,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
 
     handleUpdateData = async (item: Items) => {
       try {
+        console.log(item)
         this.firestore
           .collection(this.getKeyFromType(item.type))
           .doc(item.id)

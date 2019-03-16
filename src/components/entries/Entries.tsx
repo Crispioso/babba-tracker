@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Feed, Items, Nappy, ItemTypes } from '../../types'
-import { format } from 'date-fns'
+import { Feed, Items, Nappy, Sleep, ItemTypes } from '../../types'
+import { format, formatDistance } from 'date-fns'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -18,6 +18,7 @@ type Props = {
   date: Date
   feeds: Feed[]
   nappies: Nappy[]
+  sleeps: Sleep[]
   isLoading: boolean
 }
 
@@ -25,6 +26,14 @@ const dateFormat = 'iiii do LLL'
 const babyName = 'Baby girl'
 
 class Entries extends React.Component<Props, {}> {
+  renderSleepingTitle = (sleep: Sleep) => {
+    if (sleep.endTime == null || sleep.endTime === 0) {
+      return `${babyName} is sleeping...`
+    }
+
+    return `${babyName} slept for ${formatDistance(sleep.time, sleep.endTime)}`
+  }
+
   renderTitle = (item: Items) => {
     switch (item.type) {
       case ItemTypes.Feed: {
@@ -36,6 +45,9 @@ class Entries extends React.Component<Props, {}> {
         return `${babyName} did a ${item.isWee ? 'wee' : ''}${
           item.isWee && item.isPoop ? ' and a ' : ''
         }${item.isPoop ? 'poop' : ''}`
+      }
+      case ItemTypes.Sleep: {
+        return this.renderSleepingTitle(item)
       }
       default: {
         return 'Unrecognised item 🤔'
@@ -55,6 +67,10 @@ class Entries extends React.Component<Props, {}> {
       return (
         <span style={{ fontSize: '1.5rem', color: 'initial' }}>{'🍼'}</span>
       )
+    }
+
+    if (item.type === ItemTypes.Sleep) {
+      return <span style={{ fontSize: '1.5rem', color: 'initial' }}>😴</span>
     }
 
     if (item.type === ItemTypes.Nappy && item.isPoop && item.isWee) {
@@ -82,12 +98,13 @@ class Entries extends React.Component<Props, {}> {
     const {
       nappies,
       feeds,
+      sleeps,
       date,
       onChangeEntry,
       removeEntry,
       isLoading,
     } = this.props
-    const items = [...nappies, ...feeds]
+    const items = [...nappies, ...feeds, ...sleeps]
 
     if (isLoading) {
       return (

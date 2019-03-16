@@ -11,6 +11,7 @@ export interface Item {
 export enum ItemTypes {
   Feed = 'feed',
   Nappy = 'nappy',
+  Sleep = 'sleep',
 }
 
 export enum Units {
@@ -30,4 +31,9 @@ export interface Nappy extends Item {
   isWee: boolean
 }
 
-export type Items = Feed | Nappy
+export interface Sleep extends Item {
+  type: ItemTypes.Sleep
+  endTime?: number
+}
+
+export type Items = Feed | Nappy | Sleep

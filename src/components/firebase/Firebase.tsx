@@ -3,7 +3,7 @@ import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/database'
 import { FirebaseConfig } from './types'
-import { Feed, Nappy } from '../../types'
+import { Feed, Nappy, Sleep } from '../../types'
 
 export interface FirebaseProps {
   firestore: firebase.firestore.Firestore
@@ -37,11 +37,13 @@ export const firebaseAuth = app.auth()
 class Firebase {
   feeds: Feed[]
   nappies: Nappy[]
+  sleeps: Sleep[]
   isInitialised: boolean
 
   constructor() {
     this.feeds = []
     this.nappies = []
+    this.sleeps = []
     this.isInitialised = false
   }
 
@@ -53,12 +55,12 @@ class Firebase {
 
     // Do anything with Firebase that I want to be available before anything tries to use this Firebase class
     this.isInitialised = true
-    return { feeds: this.feeds, nappies: this.nappies }
+    return { feeds: this.feeds, nappies: this.nappies, sleeps: this.sleeps }
   }
 
   getFeeds = () => [...this.feeds]
-
   getNappies = () => [...this.nappies]
+  getSleeps = () => [...this.sleeps]
 }
 
 export default new Firebase()

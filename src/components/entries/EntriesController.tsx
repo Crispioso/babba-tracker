@@ -84,7 +84,7 @@ class EntriesController extends React.Component<Props, State> {
   }
 
   render() {
-    const { onChangeEntry, removeEntry, feeds, nappies } = this.props
+    const { onChangeEntry, removeEntry, feeds, nappies, sleeps } = this.props
     const { date, isLoading } = this.state
 
     return (
@@ -95,6 +95,7 @@ class EntriesController extends React.Component<Props, State> {
         removeEntry={removeEntry}
         feeds={feeds}
         nappies={nappies}
+        sleeps={sleeps}
       />
     )
   }
