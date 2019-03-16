@@ -20,5 +20,6 @@ npm start
 
 - ~~Add a favicon~~
 - ~~Enable it to 'Add to homescreen'~~
-- Add a 'sleep' item
-- Store a revision history for items.
+- ~~Add a 'sleep' item~~
+- Add helpers, like 'When was last feed'
+- Store a revision history for items
