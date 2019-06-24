@@ -1,14 +1,16 @@
 {
-  "main.js": "/babba-tracker/static/js/main.581a901a.chunk.js",
-  "main.js.map": "/babba-tracker/static/js/main.581a901a.chunk.js.map",
-  "static/css/1.bec1e5fc.chunk.css": "/babba-tracker/static/css/1.bec1e5fc.chunk.css",
-  "static/js/1.50a6ae04.chunk.js": "/babba-tracker/static/js/1.50a6ae04.chunk.js",
-  "static/js/1.50a6ae04.chunk.js.map": "/babba-tracker/static/js/1.50a6ae04.chunk.js.map",
-  "runtime~main.js": "/babba-tracker/static/js/runtime~main.7e125c45.js",
-  "runtime~main.js.map": "/babba-tracker/static/js/runtime~main.7e125c45.js.map",
-  "static/media/index.css": "/babba-tracker/static/media/roboto-latin-900italic.bc833e72.woff",
-  "static/css/1.bec1e5fc.chunk.css.map": "/babba-tracker/static/css/1.bec1e5fc.chunk.css.map",
-  "index.html": "/babba-tracker/index.html",
-  "precache-manifest.4c846df8afe5f0722756e3978b77ebc3.js": "/babba-tracker/precache-manifest.4c846df8afe5f0722756e3978b77ebc3.js",
-  "service-worker.js": "/babba-tracker/service-worker.js"
+  "files": {
+    "main.js": "/babba-tracker/static/js/main.8d80ec37.chunk.js",
+    "main.js.map": "/babba-tracker/static/js/main.8d80ec37.chunk.js.map",
+    "runtime~main.js": "/babba-tracker/static/js/runtime~main.651fec6a.js",
+    "runtime~main.js.map": "/babba-tracker/static/js/runtime~main.651fec6a.js.map",
+    "static/css/2.bb7d753f.chunk.css": "/babba-tracker/static/css/2.bb7d753f.chunk.css",
+    "static/js/2.f9a14072.chunk.js": "/babba-tracker/static/js/2.f9a14072.chunk.js",
+    "static/js/2.f9a14072.chunk.js.map": "/babba-tracker/static/js/2.f9a14072.chunk.js.map",
+    "index.html": "/babba-tracker/index.html",
+    "precache-manifest.f9311c9039c5f69d96150434780e6aee.js": "/babba-tracker/precache-manifest.f9311c9039c5f69d96150434780e6aee.js",
+    "service-worker.js": "/babba-tracker/service-worker.js",
+    "static/css/2.bb7d753f.chunk.css.map": "/babba-tracker/static/css/2.bb7d753f.chunk.css.map",
+    "static/media/index.css": "/babba-tracker/static/media/roboto-latin-900italic.bc833e72.woff"
+  }
 }
