@@ -11,7 +11,7 @@ interface Props {
 const FakeInput = () => <span style={{ display: 'none' }} />
 
 export default class ADatePicker extends React.Component<Props, {}> {
-  dateInput = React.createRef()
+  dateInput = React.createRef<HTMLDivElement>()
 
   handleChange = (date: Date) => {
     this.props.onChange(date)
