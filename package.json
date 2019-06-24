@@ -1,6 +1,6 @@
 {
   "name": "babba-tracker-v2",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "private": true,
   "homepage": "https://crispioso.github.io/babba-tracker/",
   "dependencies": {
