@@ -27,7 +27,7 @@ class Header extends React.Component<RouteComponentProps, {}> {
       <AppBar
         position="static"
         color="primary"
-        style={{ marginBottom: '1.5rem' }}
+        style={{ marginBottom: '0.5rem' }}
       >
         <Container>
           <Typography variant="h6" color="inherit" className="alignRight">

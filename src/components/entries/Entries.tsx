@@ -119,7 +119,7 @@ class Entries extends React.Component<Props, {}> {
       return (
         <>
           <Typography
-            style={{ fontSize: '2rem', marginBottom: '3rem' }}
+            style={{ fontSize: '2rem', paddingTop: "1.5rem", paddingBottom: '3rem' }}
             variant="h2"
           >
             {this.renderDate(date)}
@@ -142,7 +142,7 @@ class Entries extends React.Component<Props, {}> {
       return (
         <>
           <Typography
-            style={{ fontSize: '2rem', marginBottom: '3rem' }}
+            style={{ fontSize: '2rem', paddingTop: "1.5rem", paddingBottom: '3rem' }}
             variant="h2"
           >
             {this.renderDate(date)}
@@ -158,12 +158,12 @@ class Entries extends React.Component<Props, {}> {
     return (
       <>
         <Typography
-          style={{ fontSize: '2rem', marginBottom: '1rem' }}
+          style={{ fontSize: '2rem', paddingTop: "1.5rem", paddingBottom: "1rem", position: "sticky", top: "0", zIndex: 1, backgroundColor: "#fafafa" }}
           variant="h2"
         >
           {this.renderDate(date)}
         </Typography>
-        <List>
+        <List style={{ paddingBottom: "88px" }}>
           {items.map(item => (
             <ListItem key={item.id}>
               <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
