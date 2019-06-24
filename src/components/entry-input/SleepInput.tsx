@@ -126,10 +126,6 @@ class SleepInput extends React.Component<Props, State> {
   render() {
     const { endTime, note, time } = this.state
 
-    console.log({
-      time: this.convertTimeToInputString(time), endTime: this.convertTimeToInputString(endTime)
-    })
-
     return (
       <form onSubmit={this.handleSubmit}>
         <StyledFormControl style={{ marginBottom: '2rem' }}>
