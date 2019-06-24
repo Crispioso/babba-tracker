@@ -24,13 +24,12 @@ type Props = {
 }
 
 const dateFormat = 'iiii do LLL'
-const babyName = 'Baby girl'
+const babyName = 'Evelyn'
 
 class Entries extends React.Component<Props, {}> {
   renderDate = (date: Date): string => {
     const localDate = convertToLocalTime(date, { timeZone: "Europe/London" })
     return format(localDate, dateFormat)
-    // formatToTimeZone(date, dateFormat, { timeZone: "Europe/London" })
   }
 
   renderSleepingTitle = (sleep: Sleep) => {
@@ -44,9 +43,12 @@ class Entries extends React.Component<Props, {}> {
   renderTitle = (item: Items) => {
     switch (item.type) {
       case ItemTypes.Feed: {
-        return `${babyName} drank ${item.amount}${item.unit}${
-          item.amount === '1' ? 's' : ''
-          }`
+        return (<>
+          {babyName} drank {item.amount} {item.unit}{
+            item.amount === '1' ? 's' : ''
+          }
+        </>
+        )
       }
       case ItemTypes.Nappy: {
         return `${babyName} did a ${item.isWee ? 'wee' : ''}${

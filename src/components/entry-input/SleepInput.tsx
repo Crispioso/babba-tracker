@@ -7,6 +7,7 @@ import withFirebase, {
 } from '../firebase/withFirebase'
 import { ItemTypes, Items } from '../../types'
 import styled from 'styled-components'
+import { format } from 'date-fns'
 
 const StyledFormControl = styled(FormControl)`
   margin-bottom: 2rem !important;
@@ -27,12 +28,12 @@ type Props = FirebaseFunctionProps &
 type State = {
   endTime?: number
   note?: string
-  time: number
+  time?: number
 }
 
 const defaultState: State = {
   note: '',
-  time: new Date().getTime(),
+  time: undefined,
   endTime: 0,
 }
 
@@ -58,7 +59,7 @@ class SleepInput extends React.Component<Props, State> {
         note,
         type: ItemTypes.Sleep,
         id: uuid(),
-        time,
+        time: time || new Date().getTime(),
       })
       onFinish()
       return
@@ -73,7 +74,7 @@ class SleepInput extends React.Component<Props, State> {
       ...item,
       endTime,
       note,
-      time,
+      time: time || new Date().getTime(),
     })
     onFinish()
   }
@@ -91,7 +92,7 @@ class SleepInput extends React.Component<Props, State> {
       return
     }
 
-    const time = new Date().getTime()
+    const time = new Date(date).getTime()
     if (key === 'endTime') {
       this.setState({ endTime: time })
       return
@@ -108,17 +109,26 @@ class SleepInput extends React.Component<Props, State> {
     this.setState({ note: value })
   }
 
-  convertTimeToInputString = (time?: number) => {
-    if (time == null || time === 0) {
-      return ''
+  convertTimeToInputString = (time?: number): string => {
+    if (time === undefined) {
+      return ""
     }
 
-    const ISOstring = new Date(time).toISOString()
-    return ISOstring.substring(0, ISOstring.length - 5)
+    if (time === 0) {
+      return ""
+    }
+
+    const dateString = format(time, "yyyy-MM-dd")
+    const timeString = format(time, "HH:mm")
+    return `${dateString}T${timeString}:00`
   }
 
   render() {
     const { endTime, note, time } = this.state
+
+    console.log({
+      time: this.convertTimeToInputString(time), endTime: this.convertTimeToInputString(endTime)
+    })
 
     return (
       <form onSubmit={this.handleSubmit}>
