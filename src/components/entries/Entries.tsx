@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Feed, Items, Nappy, Sleep, ItemTypes } from '../../types'
 import { format, formatDistance } from 'date-fns'
+import { convertToLocalTime } from 'date-fns-timezone'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -23,9 +24,14 @@ type Props = {
 }
 
 const dateFormat = 'iiii do LLL'
-const babyName = 'Baby girl'
+const babyName = 'Evelyn'
 
 class Entries extends React.Component<Props, {}> {
+  renderDate = (date: Date): string => {
+    const localDate = convertToLocalTime(date, { timeZone: "Europe/London" })
+    return format(localDate, dateFormat)
+  }
+
   renderSleepingTitle = (sleep: Sleep) => {
     if (sleep.endTime == null || sleep.endTime === 0) {
       return `${babyName} is sleeping...`
@@ -37,14 +43,17 @@ class Entries extends React.Component<Props, {}> {
   renderTitle = (item: Items) => {
     switch (item.type) {
       case ItemTypes.Feed: {
-        return `${babyName} drank ${item.amount}${item.unit}${
-          item.amount === '1' ? 's' : ''
-        }`
+        return (<>
+          {babyName} drank {item.amount} {item.unit}{
+            item.amount === '1' ? 's' : ''
+          }
+        </>
+        )
       }
       case ItemTypes.Nappy: {
         return `${babyName} did a ${item.isWee ? 'wee' : ''}${
           item.isWee && item.isPoop ? ' and a ' : ''
-        }${item.isPoop ? 'poop' : ''}`
+          }${item.isPoop ? 'poop' : ''}`
       }
       case ItemTypes.Sleep: {
         return this.renderSleepingTitle(item)
@@ -113,7 +122,7 @@ class Entries extends React.Component<Props, {}> {
             style={{ fontSize: '2rem', marginBottom: '3rem' }}
             variant="h2"
           >
-            {format(date, dateFormat)}
+            {this.renderDate(date)}
           </Typography>
           <div
             style={{
@@ -136,7 +145,7 @@ class Entries extends React.Component<Props, {}> {
             style={{ fontSize: '2rem', marginBottom: '3rem' }}
             variant="h2"
           >
-            {format(date, dateFormat)}
+            {this.renderDate(date)}
           </Typography>
           <Typography style={{ fontSize: '1.5rem' }} variant="h3">
             Nothing today
@@ -152,7 +161,7 @@ class Entries extends React.Component<Props, {}> {
           style={{ fontSize: '2rem', marginBottom: '1rem' }}
           variant="h2"
         >
-          {format(date, dateFormat)}
+          {this.renderDate(date)}
         </Typography>
         <List>
           {items.map(item => (

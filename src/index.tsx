@@ -24,9 +24,6 @@ const theme = createMuiTheme({
       dark: blueGrey[700],
     },
   },
-  typography: {
-    useNextVariants: true,
-  },
 })
 
 const UnknownRoute = () => <h1>Oops, this page couldn't be found</h1>

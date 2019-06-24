@@ -16,6 +16,7 @@ import {
   FormLabel,
 } from '@material-ui/core'
 import styled from 'styled-components'
+import { format } from 'date-fns'
 
 const StyledFormControl = styled(FormControl)`
   margin-bottom: 2rem !important;
@@ -37,7 +38,7 @@ type State = {
   isWee: boolean
   isPoop: boolean
   note?: string
-  time: number
+  time?: number
   error?: string
 }
 
@@ -45,7 +46,7 @@ const defaultState: State = {
   isWee: false,
   isPoop: false,
   note: '',
-  time: new Date().getTime(),
+  time: undefined,
 }
 
 class EntryInput extends React.Component<Props, State> {
@@ -76,7 +77,7 @@ class EntryInput extends React.Component<Props, State> {
         note,
         type: ItemTypes.Nappy,
         id: uuid(),
-        time,
+        time: time || new Date().getTime(),
       })
       onFinish()
       return
@@ -92,7 +93,7 @@ class EntryInput extends React.Component<Props, State> {
       isWee,
       isPoop,
       note,
-      time,
+      time: time || new Date().getTime(),
     })
     onFinish()
   }
@@ -130,8 +131,11 @@ class EntryInput extends React.Component<Props, State> {
 
   render() {
     const { isWee, isPoop, note, time, error } = this.state
-    const ISOstring = new Date(time).toISOString()
-    const strippedTimeString = ISOstring.substring(0, ISOstring.length - 5)
+
+    const editableTime = time || new Date().getTime()
+    const dateString = format(editableTime, "yyyy-MM-dd")
+    const timeString = format(editableTime, "HH:mm")
+    const inputValue = `${dateString}T${timeString}:00`
 
     return (
       <form onSubmit={this.handleSubmit}>
@@ -141,7 +145,7 @@ class EntryInput extends React.Component<Props, State> {
             id="datetime-local"
             label="When"
             type="datetime-local"
-            value={strippedTimeString}
+            value={inputValue}
             InputLabelProps={{
               shrink: true,
             }}

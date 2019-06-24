@@ -51,7 +51,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
   return class ConnectFirebaseToComponent extends React.Component<
     TChildComponentProps,
     State
-  > {
+    > {
     state: State = {
       feeds: Firebase.getFeeds(),
       nappies: Firebase.getNappies(),
@@ -387,7 +387,6 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
 
     handleUpdateData = async (item: Items) => {
       try {
-        console.log(item)
         this.firestore
           .collection(this.getKeyFromType(item.type))
           .doc(item.id)
