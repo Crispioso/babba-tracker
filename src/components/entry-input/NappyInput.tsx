@@ -78,6 +78,7 @@ class EntryInput extends React.Component<Props, State> {
         type: ItemTypes.Nappy,
         id: uuid(),
         time: time || new Date().getTime(),
+        archived: false,
       })
       onFinish()
       return
@@ -133,8 +134,8 @@ class EntryInput extends React.Component<Props, State> {
     const { isWee, isPoop, note, time, error } = this.state
 
     const editableTime = time || new Date().getTime()
-    const dateString = format(editableTime, "yyyy-MM-dd")
-    const timeString = format(editableTime, "HH:mm")
+    const dateString = format(editableTime, 'yyyy-MM-dd')
+    const timeString = format(editableTime, 'HH:mm')
     const inputValue = `${dateString}T${timeString}:00`
 
     return (

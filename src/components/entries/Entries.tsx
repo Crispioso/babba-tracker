@@ -23,12 +23,20 @@ type Props = {
   isLoading: boolean
 }
 
+type State = {
+  isShowingUndoDelete: boolean
+}
+
 const dateFormat = 'iiii do LLL'
 const babyName = 'Evelyn'
 
 class Entries extends React.Component<Props, {}> {
+  state: State = {
+    isShowingUndoDelete: false,
+  }
+
   renderDate = (date: Date): string => {
-    const localDate = convertToLocalTime(date, { timeZone: "Europe/London" })
+    const localDate = convertToLocalTime(date, { timeZone: 'Europe/London' })
     return format(localDate, dateFormat)
   }
 
@@ -43,17 +51,17 @@ class Entries extends React.Component<Props, {}> {
   renderTitle = (item: Items) => {
     switch (item.type) {
       case ItemTypes.Feed: {
-        return (<>
-          {babyName} drank {item.amount} {item.unit}{
-            item.amount === '1' ? 's' : ''
-          }
-        </>
+        return (
+          <>
+            {babyName} drank {item.amount} {item.unit}
+            {item.amount === '1' ? 's' : ''}
+          </>
         )
       }
       case ItemTypes.Nappy: {
         return `${babyName} did a ${item.isWee ? 'wee' : ''}${
           item.isWee && item.isPoop ? ' and a ' : ''
-          }${item.isPoop ? 'poop' : ''}`
+        }${item.isPoop ? 'poop' : ''}`
       }
       case ItemTypes.Sleep: {
         return this.renderSleepingTitle(item)
@@ -119,7 +127,11 @@ class Entries extends React.Component<Props, {}> {
       return (
         <>
           <Typography
-            style={{ fontSize: '2rem', paddingTop: "1.5rem", paddingBottom: '3rem' }}
+            style={{
+              fontSize: '2rem',
+              paddingTop: '1.5rem',
+              paddingBottom: '3rem',
+            }}
             variant="h2"
           >
             {this.renderDate(date)}
@@ -142,7 +154,11 @@ class Entries extends React.Component<Props, {}> {
       return (
         <>
           <Typography
-            style={{ fontSize: '2rem', paddingTop: "1.5rem", paddingBottom: '3rem' }}
+            style={{
+              fontSize: '2rem',
+              paddingTop: '1.5rem',
+              paddingBottom: '3rem',
+            }}
             variant="h2"
           >
             {this.renderDate(date)}
@@ -158,12 +174,20 @@ class Entries extends React.Component<Props, {}> {
     return (
       <>
         <Typography
-          style={{ fontSize: '2rem', paddingTop: "1.5rem", paddingBottom: "1rem", position: "sticky", top: "0", zIndex: 1, backgroundColor: "#fafafa" }}
+          style={{
+            fontSize: '2rem',
+            paddingTop: '1.5rem',
+            paddingBottom: '1rem',
+            position: 'sticky',
+            top: '0',
+            zIndex: 1,
+            backgroundColor: '#fafafa',
+          }}
           variant="h2"
         >
           {this.renderDate(date)}
         </Typography>
-        <List style={{ paddingBottom: "88px" }}>
+        <List style={{ paddingBottom: '88px' }}>
           {items.map(item => (
             <ListItem key={item.id}>
               <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>

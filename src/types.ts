@@ -6,6 +6,7 @@ export interface Item {
   time: number
   note?: string
   user?: string
+  archived?: boolean
 }
 
 export enum ItemTypes {

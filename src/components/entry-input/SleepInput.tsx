@@ -60,6 +60,7 @@ class SleepInput extends React.Component<Props, State> {
         type: ItemTypes.Sleep,
         id: uuid(),
         time: time || new Date().getTime(),
+        archived: false,
       })
       onFinish()
       return
@@ -111,15 +112,15 @@ class SleepInput extends React.Component<Props, State> {
 
   convertTimeToInputString = (time?: number): string => {
     if (time === undefined) {
-      return ""
+      return ''
     }
 
     if (time === 0) {
-      return ""
+      return ''
     }
 
-    const dateString = format(time, "yyyy-MM-dd")
-    const timeString = format(time, "HH:mm")
+    const dateString = format(time, 'yyyy-MM-dd')
+    const timeString = format(time, 'HH:mm')
     return `${dateString}T${timeString}:00`
   }
 

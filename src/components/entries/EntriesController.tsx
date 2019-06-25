@@ -1,5 +1,9 @@
 import * as React from 'react'
 import { withRouter, RouteComponentProps } from 'react-router-dom'
+import Button from '@material-ui/core/Button'
+import Snackbar from '@material-ui/core/Snackbar'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
 import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
@@ -13,6 +17,8 @@ type State = {
   unsubscriptions: Array<() => void>
   date: Date
   isLoading: boolean
+  isShowingDeleteConfirmation: boolean
+  reversableDelete?: Items
 }
 
 type ExternalProps = FirebaseFunctionProps & FirebaseData & RouteComponentProps
@@ -26,6 +32,8 @@ class EntriesController extends React.Component<Props, State> {
     unsubscriptions: [],
     date: new Date(),
     isLoading: false,
+    isShowingDeleteConfirmation: false,
+    reversableDelete: undefined,
   }
 
   componentWillMount = async () => {
@@ -83,20 +91,70 @@ class EntriesController extends React.Component<Props, State> {
     this.setState({ isLoading: false })
   }
 
+  undoDelete = (item?: Items) => {
+    this.closeDeleteConfirmation()
+    if (item !== undefined) {
+      this.props.unarchiveEntry(item)
+    }
+  }
+
+  handleRemove = (item: Items) => {
+    this.showDeleteConfirmation(item)
+    this.props.archiveEntry(item)
+  }
+
+  showDeleteConfirmation = (item: Items) =>
+    this.setState({ reversableDelete: item })
+
+  closeDeleteConfirmation = () => this.setState({ reversableDelete: undefined })
+
   render() {
-    const { onChangeEntry, removeEntry, feeds, nappies, sleeps } = this.props
-    const { date, isLoading } = this.state
+    const { onChangeEntry, feeds, nappies, sleeps } = this.props
+    const { date, isLoading, reversableDelete } = this.state
 
     return (
-      <Entries
-        isLoading={isLoading}
-        date={date}
-        onChangeEntry={onChangeEntry}
-        removeEntry={removeEntry}
-        feeds={feeds}
-        nappies={nappies}
-        sleeps={sleeps}
-      />
+      <>
+        <Entries
+          isLoading={isLoading}
+          date={date}
+          onChangeEntry={onChangeEntry}
+          removeEntry={this.handleRemove}
+          feeds={feeds}
+          nappies={nappies}
+          sleeps={sleeps}
+        />
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={reversableDelete !== undefined}
+          autoHideDuration={6000}
+          onClose={this.closeDeleteConfirmation}
+          ContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">Note archived</span>}
+          action={[
+            <Button
+              key="undo"
+              color="primary"
+              size="small"
+              onClick={() => this.undoDelete(reversableDelete)}
+            >
+              UNDO
+            </Button>,
+            <IconButton
+              key="close"
+              aria-label="Close"
+              color="inherit"
+              onClick={this.closeDeleteConfirmation}
+            >
+              <CloseIcon />
+            </IconButton>,
+          ]}
+        />
+      </>
     )
   }
 }
