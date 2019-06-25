@@ -33,6 +33,7 @@ export interface FirebaseFunctionProps {
   addEntry: (item: Items) => void
   updateEntry: (item: Items) => void
   removeEntry: (item: Items) => void
+  archiveEntry: (item: Items) => void
 }
 
 export type State = {
@@ -51,7 +52,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
   return class ConnectFirebaseToComponent extends React.Component<
     TChildComponentProps,
     State
-    > {
+  > {
     state: State = {
       feeds: Firebase.getFeeds(),
       nappies: Firebase.getNappies(),
@@ -66,6 +67,22 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
           'Attempt to render component with Firebase wrapper before Firebase has been initialised',
         )
       }
+
+      const collections = ['feeds', 'nappies', 'sleeps']
+
+      collections.forEach(collectionName => {
+        this.firestore
+          .collection(collectionName)
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              const ref = this.firestore.collection(collectionName).doc(doc.id)
+              return ref.update({
+                archived: false,
+              })
+            })
+          })
+      })
     }
 
     componentWillUnmount() {
@@ -128,6 +145,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
             '<',
             endDate ? endDate.getTime() : new Date().getTime(),
           )
+          .where('archived', '==', false)
           .orderBy('time', 'desc')
           .onSnapshot(snapshot => {
             snapshot
@@ -396,6 +414,17 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       }
     }
 
+    handleArchiveData = (item: Items) => {
+      try {
+        this.firestore
+          .collection(this.getKeyFromType(item.type))
+          .doc(item.id)
+          .update({ ...item, archived: true })
+      } catch (error) {
+        console.error('Error removing Firebase data', error, item)
+      }
+    }
+
     handleRemoveData = (item: Items) => {
       try {
         this.firestore
@@ -403,7 +432,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
           .doc(item.id)
           .delete()
       } catch (error) {
-        console.error('Error remove Firebase data', error, item)
+        console.error('Error removing Firebase data', error, item)
       }
     }
 
@@ -412,6 +441,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         addEntry: this.handleAddData,
         updateEntry: this.handleUpdateData,
         removeEntry: this.handleRemoveData,
+        archiveEntry: this.handleArchiveData,
         subscribeByDate: this.subscribeByDate,
         getDataByDate: this.getDataByDate,
       }
