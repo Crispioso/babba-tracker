@@ -1,6 +1,6 @@
 import * as React from 'react'
 import firebase from 'firebase'
-import Firebase, { firestore } from './Firebase'
+import Firebase, { firestore, firebaseAuth } from './Firebase'
 import { Feed, Items, ItemTypes, Nappy, Sleep } from '../../types'
 
 export enum DataKeys {
@@ -32,7 +32,6 @@ export interface FirebaseFunctionProps {
   }) => Promise<void>
   addEntry: (item: Items) => void
   updateEntry: (item: Items) => void
-  removeEntry: (item: Items) => void
   archiveEntry: (item: Items) => void
   unarchiveEntry: (item: Items) => void
 }
@@ -170,6 +169,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       unit: doc.unit != null ? doc.unit : '',
       note: doc.note,
       time: doc.time != null ? doc.time : undefined,
+      lastEdit: doc.lastEdit !== undefined ? doc.lastEdit : undefined,
     })
 
     mapEventNappyDataToItem = (
@@ -182,6 +182,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       isWee: doc.isWee,
       note: doc.note,
       time: doc.time != null ? doc.time : undefined,
+      lastEdit: doc.lastEdit !== undefined ? doc.lastEdit : undefined,
     })
 
     mapEventSleepDataToItem = (
@@ -193,6 +194,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       endTime: doc.endTime,
       note: doc.note,
       time: doc.time != null ? doc.time : undefined,
+      lastEdit: doc.lastEdit !== undefined ? doc.lastEdit : undefined,
     })
 
     addDataReducer(
@@ -379,55 +381,74 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         item.time = this.getTimestamp()
       }
 
+      const user = firebaseAuth.currentUser
       try {
         this.firestore
           .collection(this.getKeyFromType(item.type))
           .doc(item.id)
-          .set(item)
+          .set({
+            ...item,
+            lastEdit: {
+              email: user ? user.email : '',
+              time: new Date().getTime(),
+            },
+          })
       } catch (error) {
         console.error('Error adding Firebase data', error, item)
       }
     }
 
     handleUpdateData = async (item: Items) => {
+      const user = firebaseAuth.currentUser
       try {
         this.firestore
           .collection(this.getKeyFromType(item.type))
           .doc(item.id)
-          .update(item)
+          .update({
+            ...item,
+            lastEdit: {
+              email: user ? user.email : '',
+              time: new Date().getTime(),
+            },
+          })
       } catch (error) {
         console.error('Error updating Firebase data', error, item)
       }
     }
 
     handleArchiveData = (item: Items) => {
+      const user = firebaseAuth.currentUser
       try {
         this.firestore
           .collection(this.getKeyFromType(item.type))
           .doc(item.id)
-          .update({ ...item, archived: true })
+          .update({
+            ...item,
+            archived: true,
+            lastEdit: {
+              email: user ? user.email : '',
+              time: new Date().getTime(),
+            },
+          })
       } catch (error) {
         console.error('Error removing Firebase data', error, item)
       }
     }
 
     handleUnarchiveData = (item: Items) => {
+      const user = firebaseAuth.currentUser
       try {
         this.firestore
           .collection(this.getKeyFromType(item.type))
           .doc(item.id)
-          .update({ ...item, archived: false })
-      } catch (error) {
-        console.error('Error removing Firebase data', error, item)
-      }
-    }
-
-    handleRemoveData = (item: Items) => {
-      try {
-        this.firestore
-          .collection(this.getKeyFromType(item.type))
-          .doc(item.id)
-          .delete()
+          .update({
+            ...item,
+            archived: false,
+            lastEdit: {
+              email: user ? user.email : '',
+              time: new Date().getTime(),
+            },
+          })
       } catch (error) {
         console.error('Error removing Firebase data', error, item)
       }
@@ -437,7 +458,6 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       const dataFunctions: FirebaseFunctionProps = {
         addEntry: this.handleAddData,
         updateEntry: this.handleUpdateData,
-        removeEntry: this.handleRemoveData,
         archiveEntry: this.handleArchiveData,
         unarchiveEntry: this.handleUnarchiveData,
         subscribeByDate: this.subscribeByDate,

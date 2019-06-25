@@ -7,6 +7,10 @@ export interface Item {
   note?: string
   user?: string
   archived?: boolean
+  lastEdit?: {
+    email: string
+    time: number
+  }
 }
 
 export enum ItemTypes {
