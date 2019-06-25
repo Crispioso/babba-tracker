@@ -34,6 +34,7 @@ export interface FirebaseFunctionProps {
   updateEntry: (item: Items) => void
   removeEntry: (item: Items) => void
   archiveEntry: (item: Items) => void
+  unarchiveEntry: (item: Items) => void
 }
 
 export type State = {
@@ -92,6 +93,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
             '<',
             endDate ? endDate.getTime() : new Date().getTime(),
           )
+          .where('archived', '==', false)
           .orderBy('time', 'desc')
           .get()
       })
@@ -409,6 +411,17 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       }
     }
 
+    handleUnarchiveData = (item: Items) => {
+      try {
+        this.firestore
+          .collection(this.getKeyFromType(item.type))
+          .doc(item.id)
+          .update({ ...item, archived: false })
+      } catch (error) {
+        console.error('Error removing Firebase data', error, item)
+      }
+    }
+
     handleRemoveData = (item: Items) => {
       try {
         this.firestore
@@ -426,6 +439,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         updateEntry: this.handleUpdateData,
         removeEntry: this.handleRemoveData,
         archiveEntry: this.handleArchiveData,
+        unarchiveEntry: this.handleUnarchiveData,
         subscribeByDate: this.subscribeByDate,
         getDataByDate: this.getDataByDate,
       }
