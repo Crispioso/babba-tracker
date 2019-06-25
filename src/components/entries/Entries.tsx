@@ -202,7 +202,7 @@ class Entries extends React.Component<Props, {}> {
         >
           {this.renderDate(date)}
         </Typography>
-        <List style={{ paddingBottom: '88px' }}>
+        <List style={{ paddingBottom: '104px' }}>
           {items.map(item => (
             <div key={item.id}>
               <ListItem>
