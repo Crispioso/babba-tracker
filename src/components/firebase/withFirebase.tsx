@@ -67,22 +67,6 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
           'Attempt to render component with Firebase wrapper before Firebase has been initialised',
         )
       }
-
-      const collections = ['feeds', 'nappies', 'sleeps']
-
-      collections.forEach(collectionName => {
-        this.firestore
-          .collection(collectionName)
-          .get()
-          .then(querySnapshot => {
-            querySnapshot.forEach(doc => {
-              const ref = this.firestore.collection(collectionName).doc(doc.id)
-              return ref.update({
-                archived: false,
-              })
-            })
-          })
-      })
     }
 
     componentWillUnmount() {
