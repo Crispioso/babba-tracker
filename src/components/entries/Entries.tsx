@@ -204,8 +204,8 @@ class Entries extends React.Component<Props, {}> {
         </Typography>
         <List style={{ paddingBottom: '88px' }}>
           {items.map(item => (
-            <>
-              <ListItem key={item.id}>
+            <div key={item.id}>
+              <ListItem>
                 <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
                 <ListItemText
                   primary={this.renderTitle(item)}
@@ -227,7 +227,7 @@ class Entries extends React.Component<Props, {}> {
                 </ListItemSecondaryAction>
               </ListItem>
               <Divider variant="middle" />
-            </>
+            </div>
           ))}
         </List>
       </>
