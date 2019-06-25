@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CreateIcon from '@material-ui/icons/Create'
@@ -76,7 +77,7 @@ class Entries extends React.Component<Props, {}> {
     if (item.time == null) {
       return
     }
-    return <>{format(new Date(item.time), 'HH:mm a ')}</>
+    return <>{format(new Date(item.time), 'h:mm a ')}</>
   }
 
   renderTypeIcon = (item: Items) => {
@@ -109,6 +110,20 @@ class Entries extends React.Component<Props, {}> {
     }
 
     return <></>
+  }
+
+  renderLastEditDetails = (item: Items) => {
+    const { lastEdit } = item
+
+    if (lastEdit === undefined) {
+      return
+    }
+
+    return (
+      <span style={{ marginLeft: '1rem' }}>
+        {lastEdit.email} ({format(lastEdit.time, 'p')})
+      </span>
+    )
   }
 
   renderSortedEntries = () => {
@@ -189,27 +204,30 @@ class Entries extends React.Component<Props, {}> {
         </Typography>
         <List style={{ paddingBottom: '88px' }}>
           {items.map(item => (
-            <ListItem key={item.id}>
-              <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
-              <ListItemText
-                primary={this.renderTitle(item)}
-                secondary={this.renderEntryDate(item)}
-              />
-              <ListItemSecondaryAction>
-                <IconButton
-                  onClick={() => onChangeEntry(item)}
-                  aria-label="Edit"
-                >
-                  <CreateIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => removeEntry(item)}
-                  aria-label="Delete"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
+            <div key={item.id}>
+              <ListItem>
+                <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
+                <ListItemText
+                  primary={this.renderTitle(item)}
+                  secondary={this.renderEntryDate(item)}
+                />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    onClick={() => onChangeEntry(item)}
+                    aria-label="Edit"
+                  >
+                    <CreateIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => removeEntry(item)}
+                    aria-label="Delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <Divider variant="middle" />
+            </div>
           ))}
         </List>
       </>
