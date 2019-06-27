@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Paper from '@material-ui/core/Paper'
+import InfoIcon from '@material-ui/icons/InfoOutlined'
 import styled from 'styled-components'
 import Typography from '@material-ui/core/Typography'
 import withFirebase, {
@@ -7,15 +7,16 @@ import withFirebase, {
   FirebaseData,
 } from '../firebase/withFirebase'
 import { startOfDay, endOfDay, formatDistance } from 'date-fns'
-import { Feed } from '../../types'
 
 type Props = FirebaseFunctionProps & FirebaseData
 
 const Wrapper = styled.div`
   background-color: #fff;
-  padding: 1rem;
-  margin: 1rem 1rem 1.5rem 1rem;
+  padding: 1rem 0rem;
+  margin: 1rem;
   color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  align-items: center;
 `
 
 class Summary extends React.Component<Props, {}> {
@@ -47,8 +48,14 @@ class Summary extends React.Component<Props, {}> {
 
     return (
       <Wrapper>
-        <Typography variant="body1" component="p">
-          Last ate {formatDistance(timeOfLatestFeed, new Date().getTime())} ago
+        <InfoIcon color="secondary" fontSize="large" />
+        <Typography
+          variant="body1"
+          component="p"
+          style={{ marginLeft: '1rem' }}
+        >
+          Last ate{' '}
+          <b>{formatDistance(timeOfLatestFeed, new Date().getTime())} ago</b>
         </Typography>
       </Wrapper>
     )

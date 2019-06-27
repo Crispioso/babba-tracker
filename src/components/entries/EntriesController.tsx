@@ -12,6 +12,8 @@ import Entries from './Entries'
 import { Items } from '../../types'
 import { startOfDay, endOfDay } from 'date-fns'
 import { getDateFromLocation } from '../../utils'
+import Summary from '../summary/Summary'
+import { Paper } from '@material-ui/core'
 
 type State = {
   unsubscriptions: Array<() => void>
@@ -114,6 +116,9 @@ class EntriesController extends React.Component<Props, State> {
 
     return (
       <>
+        <Paper>
+          <Summary />
+        </Paper>
         <Entries
           isLoading={isLoading}
           date={date}
