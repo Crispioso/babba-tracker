@@ -6,27 +6,51 @@ import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
 } from '../firebase/withFirebase'
+import { startOfDay, endOfDay, formatDistance } from 'date-fns'
+import { Feed } from '../../types'
 
 type Props = FirebaseFunctionProps & FirebaseData
 
 const Wrapper = styled.div`
   background-color: #fff;
-  padding: 1rem 0.5rem;
+  padding: 1rem;
+  margin: 1rem 1rem 1.5rem 1rem;
   color: rgba(0, 0, 0, 0.87);
 `
 
 class Summary extends React.Component<Props, {}> {
+  componentDidMount() {
+    const { subscribeByDate } = this.props
+    subscribeByDate({
+      startDate: startOfDay(new Date()),
+      endDate: endOfDay(new Date()),
+    })
+  }
+
+  getTimeOfLatestFeed = (): number => {
+    const { feeds } = this.props
+    const latestFeed = feeds[0]
+
+    if (latestFeed == null) {
+      return 0
+    }
+
+    return latestFeed.time
+  }
+
   render() {
+    const timeOfLatestFeed = this.getTimeOfLatestFeed()
+
+    if (timeOfLatestFeed === 0) {
+      return null
+    }
+
     return (
-      // <Paper
-      //   style={{ padding: '1rem', marginTop: '1rem', marginBottom: '1rem' }}
-      // >
       <Wrapper>
         <Typography variant="body1" component="p">
-          *Time* since evelyn last ate
+          Last ate {formatDistance(timeOfLatestFeed, new Date().getTime())} ago
         </Typography>
       </Wrapper>
-      // </Paper>
     )
   }
 }

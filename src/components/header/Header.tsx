@@ -36,9 +36,7 @@ class Header extends React.Component<RouteComponentProps, {}> {
           </Typography>
           <DatePicker value={date} onChange={this.handleDateChange} />
         </Container>
-        {/* <div style={{ padding: '1rem' }}>
-          <Summary />
-        </div> */}
+        <Summary />
       </AppBar>
     )
   }
