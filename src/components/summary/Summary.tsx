@@ -50,7 +50,7 @@ class Summary extends React.Component<Props, {}> {
   render() {
     const timeOfLatestFeed = this.getTimeOfLatestFeed()
     const showFeedWarning =
-      differenceInHours(timeOfLatestFeed, new Date().getTime() + 10000000000) <
+      differenceInHours(timeOfLatestFeed, new Date().getTime()) <
       -maxHoursWithoutFeed
 
     if (timeOfLatestFeed === 0) {
