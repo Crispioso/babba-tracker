@@ -11,7 +11,7 @@ import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CreateIcon from '@material-ui/icons/Create'
-import { Typography } from '@material-ui/core'
+import { Typography, Paper } from '@material-ui/core'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 type Props = {
@@ -143,9 +143,11 @@ class Entries extends React.Component<Props, {}> {
         <>
           <Typography
             style={{
-              fontSize: '2rem',
+              fontSize: '1rem',
               paddingTop: '1.5rem',
               paddingBottom: '3rem',
+              fontWeight: 500,
+              color: 'rgba(0, 0, 0, 0.54)',
             }}
             variant="h2"
           >
@@ -170,9 +172,11 @@ class Entries extends React.Component<Props, {}> {
         <>
           <Typography
             style={{
-              fontSize: '2rem',
+              fontSize: '1rem',
               paddingTop: '1.5rem',
               paddingBottom: '3rem',
+              fontWeight: 500,
+              color: 'rgba(0, 0, 0, 0.54)',
             }}
             variant="h2"
           >
@@ -190,46 +194,50 @@ class Entries extends React.Component<Props, {}> {
       <>
         <Typography
           style={{
-            fontSize: '2rem',
+            fontSize: '1rem',
             paddingTop: '1.5rem',
             paddingBottom: '1rem',
+            fontWeight: 500,
             position: 'sticky',
             top: '0',
             zIndex: 1,
-            backgroundColor: '#fafafa',
+            color: 'rgba(0, 0, 0, 0.54)',
+            backgroundColor: '#f5f5f5',
           }}
           variant="h2"
         >
           {this.renderDate(date)}
         </Typography>
-        <List style={{ paddingBottom: '104px' }}>
-          {items.map(item => (
-            <div key={item.id}>
-              <ListItem>
-                <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
-                <ListItemText
-                  primary={this.renderTitle(item)}
-                  secondary={this.renderEntryDate(item)}
-                />
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => onChangeEntry(item)}
-                    aria-label="Edit"
-                  >
-                    <CreateIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => removeEntry(item)}
-                    aria-label="Delete"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-              <Divider variant="middle" />
-            </div>
-          ))}
-        </List>
+        <div style={{ marginBottom: '104px', backgroundColor: '#fff' }}>
+          <List>
+            {items.map((item, index) => (
+              <div key={item.id}>
+                <ListItem>
+                  <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
+                  <ListItemText
+                    primary={this.renderTitle(item)}
+                    secondary={this.renderEntryDate(item)}
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      onClick={() => onChangeEntry(item)}
+                      aria-label="Edit"
+                    >
+                      <CreateIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => removeEntry(item)}
+                      aria-label="Delete"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                {index + 1 < items.length && <Divider variant="middle" />}
+              </div>
+            ))}
+          </List>
+        </div>
       </>
     )
   }

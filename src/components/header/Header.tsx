@@ -6,6 +6,7 @@ import { Typography, Toolbar } from '@material-ui/core'
 import DatePicker from '../date-picker/DatePicker'
 import { format } from 'date-fns'
 import { getDateFromLocation } from '../../utils'
+import Summary from '../summary/Summary'
 
 const Container = styled(Toolbar)`
   display: flex;
@@ -35,6 +36,9 @@ class Header extends React.Component<RouteComponentProps, {}> {
           </Typography>
           <DatePicker value={date} onChange={this.handleDateChange} />
         </Container>
+        {/* <div style={{ padding: '1rem' }}>
+          <Summary />
+        </div> */}
       </AppBar>
     )
   }
