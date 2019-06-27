@@ -1,12 +1,18 @@
 import * as React from 'react'
 import InfoIcon from '@material-ui/icons/InfoOutlined'
+import PriorityIcon from '@material-ui/icons/PriorityHigh'
 import styled from 'styled-components'
 import Typography from '@material-ui/core/Typography'
 import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
 } from '../firebase/withFirebase'
-import { startOfDay, endOfDay, formatDistance } from 'date-fns'
+import {
+  startOfDay,
+  endOfDay,
+  formatDistance,
+  differenceInHours,
+} from 'date-fns'
 
 type Props = FirebaseFunctionProps & FirebaseData
 
@@ -18,6 +24,8 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
 `
+
+const maxHoursWithoutFeed = 4
 
 class Summary extends React.Component<Props, {}> {
   componentDidMount() {
@@ -41,6 +49,9 @@ class Summary extends React.Component<Props, {}> {
 
   render() {
     const timeOfLatestFeed = this.getTimeOfLatestFeed()
+    const showFeedWarning =
+      differenceInHours(timeOfLatestFeed, new Date().getTime() + 10000000000) <
+      -maxHoursWithoutFeed
 
     if (timeOfLatestFeed === 0) {
       return null
@@ -48,7 +59,11 @@ class Summary extends React.Component<Props, {}> {
 
     return (
       <Wrapper>
-        <InfoIcon color="secondary" fontSize="large" />
+        {showFeedWarning ? (
+          <PriorityIcon color="error" fontSize="large" />
+        ) : (
+          <InfoIcon color="secondary" fontSize="large" />
+        )}
         <Typography
           variant="body1"
           component="p"
