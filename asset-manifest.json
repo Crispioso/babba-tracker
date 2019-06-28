@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.js": "/babba-tracker/static/js/main.1369c8a3.chunk.js",
-    "main.js.map": "/babba-tracker/static/js/main.1369c8a3.chunk.js.map",
+    "main.js": "/babba-tracker/static/js/main.e2a6dda2.chunk.js",
+    "main.js.map": "/babba-tracker/static/js/main.e2a6dda2.chunk.js.map",
     "runtime~main.js": "/babba-tracker/static/js/runtime~main.651fec6a.js",
     "runtime~main.js.map": "/babba-tracker/static/js/runtime~main.651fec6a.js.map",
     "static/css/2.bb7d753f.chunk.css": "/babba-tracker/static/css/2.bb7d753f.chunk.css",
     "static/js/2.e5e1c659.chunk.js": "/babba-tracker/static/js/2.e5e1c659.chunk.js",
     "static/js/2.e5e1c659.chunk.js.map": "/babba-tracker/static/js/2.e5e1c659.chunk.js.map",
     "index.html": "/babba-tracker/index.html",
-    "precache-manifest.90f384b11c3ff7ca8af27d1d8f910586.js": "/babba-tracker/precache-manifest.90f384b11c3ff7ca8af27d1d8f910586.js",
+    "precache-manifest.8452ac58ab07677781ed296b0a4c25eb.js": "/babba-tracker/precache-manifest.8452ac58ab07677781ed296b0a4c25eb.js",
     "service-worker.js": "/babba-tracker/service-worker.js",
     "static/css/2.bb7d753f.chunk.css.map": "/babba-tracker/static/css/2.bb7d753f.chunk.css.map",
     "static/media/index.css": "/babba-tracker/static/media/roboto-latin-900italic.bc833e72.woff"
