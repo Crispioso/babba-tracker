@@ -187,11 +187,11 @@ class FeedInput extends React.Component<Props, State> {
             value={unit}
             onChange={this.handleUnitChange}
           >
+            <option key={Units.FluidOz} selected value={Units.FluidOz}>
+              {Units.FluidOz}
+            </option>
             <option key={Units.Millilitres} value={Units.Millilitres}>
               {Units.Millilitres}
-            </option>
-            <option key={Units.FluidOz} value={Units.FluidOz}>
-              {Units.FluidOz}
             </option>
           </TextField>
           <TextField
