@@ -10,8 +10,8 @@ import withFirebase, {
 import {
   startOfDay,
   endOfDay,
-  formatDistance,
   differenceInHours,
+  differenceInMinutes,
 } from 'date-fns'
 
 type Props = FirebaseFunctionProps & FirebaseData
@@ -57,6 +57,12 @@ class Summary extends React.Component<Props, {}> {
       return null
     }
 
+    const lastFeedInMinutes = differenceInMinutes(new Date(), timeOfLatestFeed)
+    const lastFeedInHours = differenceInHours(new Date(), timeOfLatestFeed)
+    const numberOfMinutesConvertedToHours = 60 * lastFeedInHours
+    const differenceInMinutesMinusHours =
+      lastFeedInMinutes - numberOfMinutesConvertedToHours
+
     return (
       <Wrapper>
         {showFeedWarning ? (
@@ -70,7 +76,12 @@ class Summary extends React.Component<Props, {}> {
           style={{ marginLeft: '1rem' }}
         >
           Last ate{' '}
-          <b>{formatDistance(timeOfLatestFeed, new Date().getTime())} ago</b>
+          <b>
+            {lastFeedInHours !== 0 &&
+              `${lastFeedInHours} hour${lastFeedInHours > 1 && 's'} `}
+            {differenceInMinutesMinusHours} minute
+            {differenceInMinutesMinusHours > 1 && 's'} ago
+          </b>
         </Typography>
       </Wrapper>
     )
