@@ -53,6 +53,30 @@ class Summary extends React.Component<Props, {}> {
     return latestFeed.time
   }
 
+  renderText(timeOfLatestFeed: number) {
+    const lastFeedInMinutes = differenceInMinutes(new Date(), timeOfLatestFeed)
+    const lastFeedInHours = differenceInHours(new Date(), timeOfLatestFeed)
+    const numberOfMinutesConvertedToHours = 60 * lastFeedInHours
+    const differenceInMinutesMinusHours =
+      lastFeedInMinutes - numberOfMinutesConvertedToHours
+
+    if (lastFeedInMinutes === 0) {
+      return <>Evelyn just ate</>
+    }
+
+    return (
+      <>
+        Last ate{' '}
+        <b>
+          {lastFeedInHours !== 0 &&
+            `${lastFeedInHours} hour${lastFeedInHours > 1 ? 's' : ''} `}
+          {differenceInMinutesMinusHours} minute
+          {differenceInMinutesMinusHours > 1 ? 's' : ''} ago
+        </b>
+      </>
+    )
+  }
+
   render() {
     const timeOfLatestFeed = this.getTimeOfLatestFeed()
     const showFeedWarning =
@@ -62,12 +86,6 @@ class Summary extends React.Component<Props, {}> {
     if (timeOfLatestFeed === 0) {
       return null
     }
-
-    const lastFeedInMinutes = differenceInMinutes(new Date(), timeOfLatestFeed)
-    const lastFeedInHours = differenceInHours(new Date(), timeOfLatestFeed)
-    const numberOfMinutesConvertedToHours = 60 * lastFeedInHours
-    const differenceInMinutesMinusHours =
-      lastFeedInMinutes - numberOfMinutesConvertedToHours
 
     return (
       <Wrapper>
@@ -81,13 +99,7 @@ class Summary extends React.Component<Props, {}> {
           component="p"
           style={{ marginLeft: '1rem' }}
         >
-          Last ate{' '}
-          <b>
-            {lastFeedInHours !== 0 &&
-              `${lastFeedInHours} hour${lastFeedInHours > 1 && 's'} `}
-            {differenceInMinutesMinusHours} minute
-            {differenceInMinutesMinusHours > 1 && 's'} ago
-          </b>
+          {this.renderText(timeOfLatestFeed)}
         </Typography>
       </Wrapper>
     )
