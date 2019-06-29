@@ -42,7 +42,7 @@ type State = {
 
 const defaultState: State = {
   amount: '',
-  unit: Units.Millilitres,
+  unit: Units.FluidOz,
   note: '',
   time: undefined,
 }
@@ -187,7 +187,7 @@ class FeedInput extends React.Component<Props, State> {
             value={unit}
             onChange={this.handleUnitChange}
           >
-            <option key={Units.FluidOz} selected value={Units.FluidOz}>
+            <option key={Units.FluidOz} value={Units.FluidOz}>
               {Units.FluidOz}
             </option>
             <option key={Units.Millilitres} value={Units.Millilitres}>
