@@ -116,7 +116,7 @@ class EntriesController extends React.Component<Props, State> {
 
     return (
       <>
-        <Paper>
+        <Paper square={true}>
           <Summary />
         </Paper>
         <Entries

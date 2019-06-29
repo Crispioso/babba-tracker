@@ -55,7 +55,6 @@ class Entries extends React.Component<Props, {}> {
         return (
           <>
             {babyName} drank {item.amount} {item.unit}
-            {item.amount === '1' ? 's' : ''}
           </>
         )
       }
