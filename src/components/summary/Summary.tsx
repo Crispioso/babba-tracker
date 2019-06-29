@@ -38,7 +38,13 @@ class Summary extends React.Component<Props, {}> {
 
   getTimeOfLatestFeed = (): number => {
     const { feeds } = this.props
-    const latestFeed = feeds[0]
+
+    if (feeds.length === 1) {
+      return feeds[0].time
+    }
+
+    const feedsInDateOrder = feeds.sort((a, b) => a.time - b.time)
+    const latestFeed = feedsInDateOrder[feeds.length - 1]
 
     if (latestFeed == null) {
       return 0
