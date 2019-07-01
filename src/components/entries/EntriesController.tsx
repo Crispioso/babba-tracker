@@ -143,7 +143,7 @@ class EntriesController extends React.Component<Props, State> {
           action={[
             <Button
               key="undo"
-              color="primary"
+              color="inherit"
               size="small"
               onClick={() => this.undoDelete(reversableDelete)}
             >
