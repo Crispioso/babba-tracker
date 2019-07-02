@@ -6,6 +6,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import Button from '@material-ui/core/Button'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CreateIcon from '@material-ui/icons/Create'
@@ -21,6 +22,15 @@ type Props = {
 }
 
 const dateFormat = 'iiii do LLL'
+
+// FIXME - I should be properly styling this, not setting important
+const DeleteButton = styled(Button)`
+  color: #fff !important;
+  background-color: rgb(220, 0, 78) !important;
+  :hover {
+    background-color: rgb(154, 0, 54) !important;
+  }
+`
 
 const ButtonWrapper = styled.div`
   margin-left: 0 !important;
@@ -112,9 +122,16 @@ class Entry extends React.Component<Props, {}> {
     }
 
     return (
-      <>
-        {lastEdit.email} ({format(lastEdit.time, 'p')})
-      </>
+      <p
+        style={{
+          color: 'rgba(0, 0, 0, 0.54)',
+          fontSize: '0.8rem',
+          margin: 0,
+          padding: 0,
+        }}
+      >
+        Last edited by {lastEdit.email} at {format(lastEdit.time, 'p')}
+      </p>
     )
   }
 
@@ -124,11 +141,17 @@ class Entry extends React.Component<Props, {}> {
     return (
       <ExpansionPanel expanded={expanded} onChange={() => onClick(item.id)}>
         <ExpansionPanelSummary
+          expandIcon={<ExpandMoreIcon />}
           aria-controls={`content-${item.id}`}
           id={`header-${item.id}`}
         >
           <Typography>{this.renderTitle(item)}</Typography>
         </ExpansionPanelSummary>
+        {item.note == null && (
+          <ExpansionPanelDetails>
+            <Typography variant="body1">{item.note}</Typography>
+          </ExpansionPanelDetails>
+        )}
         <ExpansionPanelDetails>
           {this.renderLastEditDetails(item)}
         </ExpansionPanelDetails>
@@ -140,10 +163,14 @@ class Entry extends React.Component<Props, {}> {
             </Button>
           </ButtonWrapper>
           <ButtonWrapper>
-            <Button variant="contained" color="default" onClick={onRemove}>
+            <DeleteButton
+              variant="contained"
+              color="default"
+              onClick={onRemove}
+            >
               Delete
               <DeleteIcon style={{ marginLeft: '1rem' }} />
-            </Button>
+            </DeleteButton>
           </ButtonWrapper>
         </ExpansionPanelActions>
       </ExpansionPanel>
