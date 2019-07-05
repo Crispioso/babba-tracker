@@ -40,7 +40,7 @@ class EntriesController extends React.Component<Props, State> {
 
   componentWillMount = async () => {
     const { location, getDataByDate, subscribeByDate } = this.props
-    const date = getDateFromLocation(location)
+    const date = getDateFromLocation(location) || new Date()
     const unsubscriptions = subscribeByDate({
       startDate: startOfDay(date),
       endDate: endOfDay(date),
@@ -58,8 +58,8 @@ class EntriesController extends React.Component<Props, State> {
 
   componentWillReceiveProps = (nextProps: Props) => {
     const { location } = nextProps
-    const date = getDateFromLocation(this.props.location)
-    const nextDate = getDateFromLocation(location)
+    const date = getDateFromLocation(this.props.location) || new Date()
+    const nextDate = getDateFromLocation(location) || new Date()
 
     if (date.getTime() === nextDate.getTime()) {
       return

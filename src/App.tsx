@@ -12,9 +12,9 @@ import Slide from '@material-ui/core/Slide'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { format } from 'date-fns'
+import { format, isSameDay } from 'date-fns'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
-import parseQuery from 'query-string'
+import { getDateFromLocation } from './utils'
 
 function TransitionUp<P>(props: P) {
   return <Slide direction="up" {...props} />
@@ -42,9 +42,9 @@ type State = {
   entryBeingEdited?: Items
 }
 
-const today = format(new Date(), 'yyyy-MM-dd')
+type Props = RouteComponentProps
 
-class App extends React.Component<RouteComponentProps, State> {
+class App extends React.Component<Props, State> {
   state: State = {
     isInitialisingFirebase: false,
     isInputtingEntry: false,
@@ -62,10 +62,9 @@ class App extends React.Component<RouteComponentProps, State> {
     })
 
     const { history, location } = this.props
-
-    const queries = parseQuery.parse(location.search)
-    if (queries.date == null) {
-      history.replace(`?date=${today}`)
+    const date = getDateFromLocation(location)
+    if (date !== undefined && isSameDay(date, new Date())) {
+      history.replace('/')
     }
 
     this.signInConfig = {
@@ -85,6 +84,14 @@ class App extends React.Component<RouteComponentProps, State> {
     this.unregisterAuthObserver = firebaseAuth.onAuthStateChanged(user =>
       this.setState({ isSignedIn: !!user, isInitialisingFirebase: false }),
     )
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    const { history, location } = nextProps
+    const date = getDateFromLocation(location)
+    if (date !== undefined && isSameDay(date, new Date())) {
+      history.replace('/')
+    }
   }
 
   componentWillUnmount() {

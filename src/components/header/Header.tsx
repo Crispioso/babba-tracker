@@ -22,7 +22,7 @@ class Header extends React.Component<RouteComponentProps, {}> {
 
   render() {
     const { location } = this.props
-    const date = getDateFromLocation(location)
+    const date = getDateFromLocation(location) || new Date()
 
     return (
       <AppBar
