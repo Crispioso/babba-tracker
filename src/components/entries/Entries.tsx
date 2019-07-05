@@ -1,7 +1,12 @@
 import * as React from 'react'
 import { Feed, Items, Nappy, Sleep, ItemTypes } from '../../types'
+import Entry from './Entry'
 import { format, formatDistance } from 'date-fns'
 import { convertToLocalTime } from 'date-fns-timezone'
+import { styled } from '@material-ui/core/styles'
+import ExpansionPanel from '@material-ui/core/ExpansionPanel'
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -26,6 +31,7 @@ type Props = {
 
 type State = {
   isShowingUndoDelete: boolean
+  expandedEntryKey?: string
 }
 
 const dateFormat = 'iiii do LLL'
@@ -34,98 +40,25 @@ const babyName = 'Evelyn'
 class Entries extends React.Component<Props, {}> {
   state: State = {
     isShowingUndoDelete: false,
+    expandedEntryKey: undefined,
+  }
+
+  handleEntryClick = (id: string) => {
+    const { expandedEntryKey } = this.state
+
+    if (expandedEntryKey === id) {
+      this.setState({ expandedEntryKey: undefined })
+      return
+    }
+
+    this.setState({ expandedEntryKey: id })
   }
 
   renderDate = (date: Date): string => {
     const localDate = convertToLocalTime(date, { timeZone: 'Europe/London' })
     return format(localDate, dateFormat)
   }
-
-  renderSleepingTitle = (sleep: Sleep) => {
-    if (sleep.endTime == null || sleep.endTime === 0) {
-      return `${babyName} is sleeping...`
-    }
-
-    return `${babyName} slept for ${formatDistance(sleep.time, sleep.endTime)}`
-  }
-
-  renderTitle = (item: Items) => {
-    switch (item.type) {
-      case ItemTypes.Feed: {
-        return (
-          <>
-            {babyName} drank {item.amount} {item.unit}
-          </>
-        )
-      }
-      case ItemTypes.Nappy: {
-        return `${babyName} did a ${item.isWee ? 'wee' : ''}${
-          item.isWee && item.isPoop ? ' and a ' : ''
-        }${item.isPoop ? 'poop' : ''}`
-      }
-      case ItemTypes.Sleep: {
-        return this.renderSleepingTitle(item)
-      }
-      default: {
-        return 'Unrecognised item 🤔'
-      }
-    }
-  }
-
-  renderEntryDate = (item: Items) => {
-    if (item.time == null) {
-      return
-    }
-    return <>{format(new Date(item.time), 'h:mm a ')}</>
-  }
-
-  renderTypeIcon = (item: Items) => {
-    if (item.type === ItemTypes.Feed) {
-      return (
-        <span style={{ fontSize: '1.5rem', color: 'initial' }}>{'🍼'}</span>
-      )
-    }
-
-    if (item.type === ItemTypes.Sleep) {
-      return <span style={{ fontSize: '1.5rem', color: 'initial' }}>😴</span>
-    }
-
-    if (item.type === ItemTypes.Nappy && item.isPoop && item.isWee) {
-      return (
-        <span style={{ fontSize: '0.6rem', color: 'initial' }}>{'💩💦'}</span>
-      )
-    }
-
-    if (item.type === ItemTypes.Nappy && item.isPoop) {
-      return (
-        <span style={{ fontSize: '1.5rem', color: 'initial' }}>{'💩'}</span>
-      )
-    }
-
-    if (item.type === ItemTypes.Nappy && item.isWee) {
-      return (
-        <span style={{ fontSize: '1.5rem', color: 'initial' }}>{'💦'}</span>
-      )
-    }
-
-    return <></>
-  }
-
-  renderLastEditDetails = (item: Items) => {
-    const { lastEdit } = item
-
-    if (lastEdit === undefined) {
-      return
-    }
-
-    return (
-      <span style={{ marginLeft: '1rem' }}>
-        {lastEdit.email} ({format(lastEdit.time, 'p')})
-      </span>
-    )
-  }
-
-  renderSortedEntries = () => {
+  render() {
     const {
       nappies,
       feeds,
@@ -136,6 +69,7 @@ class Entries extends React.Component<Props, {}> {
       isLoading,
     } = this.props
     const items = [...nappies, ...feeds, ...sleeps]
+    const { expandedEntryKey } = this.state
 
     if (isLoading) {
       return (
@@ -207,42 +141,22 @@ class Entries extends React.Component<Props, {}> {
         >
           {this.renderDate(date)}
         </Typography>
-        <div style={{ marginBottom: '104px', backgroundColor: '#fff' }}>
-          <List>
-            {items.map((item, index) => (
-              <div key={item.id}>
-                <ListItem>
-                  <ListItemIcon>{this.renderTypeIcon(item)}</ListItemIcon>
-                  <ListItemText
-                    primary={this.renderTitle(item)}
-                    secondary={this.renderEntryDate(item)}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      onClick={() => onChangeEntry(item)}
-                      aria-label="Edit"
-                    >
-                      <CreateIcon />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => removeEntry(item)}
-                      aria-label="Delete"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                {index + 1 < items.length && <Divider variant="middle" />}
-              </div>
-            ))}
-          </List>
+        <div style={{ marginBottom: '104px' }}>
+          {items.map(item => (
+            <Entry
+              key={item.id}
+              expanded={
+                expandedEntryKey !== undefined && expandedEntryKey === item.id
+              }
+              item={item}
+              onClick={this.handleEntryClick}
+              onEdit={() => onChangeEntry(item)}
+              onRemove={() => removeEntry(item)}
+            />
+          ))}
         </div>
       </>
     )
-  }
-
-  render() {
-    return this.renderSortedEntries()
   }
 }
 

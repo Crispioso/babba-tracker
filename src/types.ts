@@ -42,3 +42,5 @@ export interface Sleep extends Item {
 }
 
 export type Items = Feed | Nappy | Sleep
+
+export const babyName = 'Evelyn'
