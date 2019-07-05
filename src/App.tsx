@@ -12,9 +12,10 @@ import Slide from '@material-ui/core/Slide'
 import Fab from '@material-ui/core/Fab'
 import AddIcon from '@material-ui/icons/Add'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { format, isSameDay } from 'date-fns'
+import { isSameDay } from 'date-fns'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 import { getDateFromLocation } from './utils'
+import { askForPermissionToReceiveNotifications } from './components/push-notification'
 
 function TransitionUp<P>(props: P) {
   return <Slide direction="up" {...props} />

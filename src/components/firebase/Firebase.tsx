@@ -2,6 +2,7 @@ import * as app from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/database'
+import 'firebase/messaging'
 import { FirebaseConfig } from './types'
 import { Feed, Nappy, Sleep } from '../../types'
 
@@ -10,7 +11,7 @@ export interface FirebaseProps {
   database: firebase.database.Database
 }
 
-const config: FirebaseConfig = {
+export const config: FirebaseConfig = {
   apiKey: 'AIzaSyCLtPtjhDedOYHLfrOZ_yVvMWjL2hFgDO0',
   authDomain: 'babba-68803.firebaseapp.com',
   databaseURL: 'https://babba-68803.firebaseio.com',
@@ -33,6 +34,7 @@ export const firebaseApp = app.initializeApp(config)
 export const firebaseDB = app.database()
 export const firestore = app.firestore()
 export const firebaseAuth = app.auth()
+export const firebaseMessaging = app.messaging()
 
 class Firebase {
   feeds: Feed[]
