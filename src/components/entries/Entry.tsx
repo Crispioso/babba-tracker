@@ -10,6 +10,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import Button from '@material-ui/core/Button'
 import DeleteIcon from '@material-ui/icons/Delete'
 import CreateIcon from '@material-ui/icons/Create'
+import Chip from '@material-ui/core/Chip'
 import { Typography } from '@material-ui/core'
 import { Items, Sleep, ItemTypes, babyName } from '../../types'
 
@@ -38,6 +39,14 @@ const ButtonWrapper = styled.div`
   margin-right: 16px;
 `
 
+const TypeIconWrapper = styled.span`
+  font-size: ${(props: { isDouble?: boolean }) =>
+    props.isDouble ? '0.5rem' : '1rem'};
+  margin-right: 1rem;
+  padding-top: ${(props: { isDouble?: boolean }) =>
+    props.isDouble ? '8px' : '2px'};
+`
+
 class Entry extends React.Component<Props, {}> {
   renderDate = (date: Date): string => {
     const localDate = convertToLocalTime(date, { timeZone: 'Europe/London' })
@@ -57,12 +66,12 @@ class Entry extends React.Component<Props, {}> {
       case ItemTypes.Feed: {
         return (
           <>
-            {babyName} drank {item.amount} {item.unit}
+            Drank {item.amount} {item.unit}
           </>
         )
       }
       case ItemTypes.Nappy: {
-        return `${babyName} did a ${item.isWee ? 'wee' : ''}${
+        return `Did a ${item.isWee ? 'wee' : ''}${
           item.isWee && item.isPoop ? ' and a ' : ''
         }${item.isPoop ? 'poop' : ''}`
       }
@@ -84,31 +93,23 @@ class Entry extends React.Component<Props, {}> {
 
   renderTypeIcon = (item: Items) => {
     if (item.type === ItemTypes.Feed) {
-      return (
-        <span style={{ fontSize: '1.5rem', color: 'initial' }}>{'🍼'}</span>
-      )
+      return <TypeIconWrapper>{'🍼'}</TypeIconWrapper>
     }
 
     if (item.type === ItemTypes.Sleep) {
-      return <span style={{ fontSize: '1.5rem', color: 'initial' }}>😴</span>
+      return <TypeIconWrapper>😴</TypeIconWrapper>
     }
 
     if (item.type === ItemTypes.Nappy && item.isPoop && item.isWee) {
-      return (
-        <span style={{ fontSize: '0.6rem', color: 'initial' }}>{'💩💦'}</span>
-      )
+      return <TypeIconWrapper isDouble>{'💩💦'}</TypeIconWrapper>
     }
 
     if (item.type === ItemTypes.Nappy && item.isPoop) {
-      return (
-        <span style={{ fontSize: '1.5rem', color: 'initial' }}>{'💩'}</span>
-      )
+      return <TypeIconWrapper>{'💩'}</TypeIconWrapper>
     }
 
     if (item.type === ItemTypes.Nappy && item.isWee) {
-      return (
-        <span style={{ fontSize: '1.5rem', color: 'initial' }}>{'💦'}</span>
-      )
+      return <TypeIconWrapper>{'💦'}</TypeIconWrapper>
     }
 
     return <></>
@@ -138,6 +139,8 @@ class Entry extends React.Component<Props, {}> {
   render() {
     const { item, expanded, onClick, onEdit, onRemove } = this.props
 
+    console.log()
+
     return (
       <ExpansionPanel expanded={expanded} onChange={() => onClick(item.id)}>
         <ExpansionPanelSummary
@@ -145,9 +148,13 @@ class Entry extends React.Component<Props, {}> {
           aria-controls={`content-${item.id}`}
           id={`header-${item.id}`}
         >
+          {this.renderTypeIcon(item)}
           <Typography>{this.renderTitle(item)}</Typography>
+          {item.note !== undefined && item.note !== '' && (
+            <Chip label="note" size="small" style={{ marginLeft: '1rem' }} />
+          )}
         </ExpansionPanelSummary>
-        {item.note == null && (
+        {item.note !== undefined && item.note !== '' && (
           <ExpansionPanelDetails>
             <Typography variant="body1">{item.note}</Typography>
           </ExpansionPanelDetails>
