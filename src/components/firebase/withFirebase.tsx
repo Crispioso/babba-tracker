@@ -16,6 +16,13 @@ export type FirebaseData = {
 }
 
 export interface FirebaseFunctionProps {
+  subscribeByType: ({
+    limit,
+    type,
+  }: {
+    limit?: number
+    type: ItemTypes
+  }) => Array<() => void>
   subscribeByDate: ({
     startDate,
     endDate,
@@ -74,6 +81,29 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         return
       }
       this.unsubscriptions.forEach(subscription => subscription())
+    }
+
+    subscribeByType = ({
+      limit,
+      type,
+    }: {
+      limit?: number
+      type: ItemTypes
+    }) => {
+      const key = this.getKeyFromType(type)
+
+      const unsubscription = this.firestore
+        .collection(key)
+        .orderBy('time', 'desc')
+        .limit(limit || 10)
+        .onSnapshot(snapshot => {
+          snapshot
+            .docChanges()
+            .forEach(change => this.handleFirebaseChangeEvent(change))
+        }, this.handleSubscribeError)
+
+      this.unsubscriptions = [...this.unsubscriptions, unsubscription]
+      return this.unsubscriptions
     }
 
     getDataByDate = async ({
@@ -462,6 +492,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
         unarchiveEntry: this.handleUnarchiveData,
         subscribeByDate: this.subscribeByDate,
         getDataByDate: this.getDataByDate,
+        subscribeByType: this.subscribeByType,
       }
       return (
         <ChildComponent {...dataFunctions} {...this.props} {...this.state} />

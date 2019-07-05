@@ -13,6 +13,7 @@ import {
   differenceInHours,
   differenceInMinutes,
 } from 'date-fns'
+import { ItemTypes } from '../../types'
 
 type Props = FirebaseFunctionProps & FirebaseData
 
@@ -29,11 +30,8 @@ const maxHoursWithoutFeed = 4
 
 class Summary extends React.Component<Props, {}> {
   componentDidMount() {
-    const { subscribeByDate } = this.props
-    subscribeByDate({
-      startDate: startOfDay(new Date()),
-      endDate: endOfDay(new Date()),
-    })
+    const { subscribeByType } = this.props
+    subscribeByType({ limit: 1, type: ItemTypes.Feed })
   }
 
   getTimeOfLatestFeed = (): number => {
