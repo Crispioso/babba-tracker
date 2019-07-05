@@ -121,7 +121,6 @@ class EntryInput extends React.Component<Props, State> {
               <CloseSharp />
             </IconButton>
           </Header>
-          {isEditingItem && this.renderLastEditDetails()}
         </div>
         {!isEditingItem && (
           <FormControl style={{ marginBottom: '2rem' }}>
