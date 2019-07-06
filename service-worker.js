@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/babba-tracker/precache-manifest.4c18319b6eb6c5b6fa9df1bdb74ebe4e.js"
+  "/babba-tracker/precache-manifest.282bafa364286d6204cc529455bf9429.js"
 );
 
 self.addEventListener('message', (event) => {
