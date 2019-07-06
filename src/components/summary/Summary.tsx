@@ -7,15 +7,14 @@ import withFirebase, {
   FirebaseFunctionProps,
   FirebaseData,
 } from '../firebase/withFirebase'
-import {
-  startOfDay,
-  endOfDay,
-  differenceInHours,
-  differenceInMinutes,
-} from 'date-fns'
+import { differenceInHours, differenceInMinutes } from 'date-fns'
 import { ItemTypes } from '../../types'
 
 type Props = FirebaseFunctionProps & FirebaseData
+
+type State = {
+  time: number
+}
 
 const Wrapper = styled.div`
   background-color: #fff;
@@ -28,10 +27,27 @@ const Wrapper = styled.div`
 
 const maxHoursWithoutFeed = 4
 
-class Summary extends React.Component<Props, {}> {
+class Summary extends React.Component<Props, State> {
+  interval: number = 0
+  state: State = {
+    time: new Date().getTime(),
+  }
+
   componentDidMount() {
     const { subscribeByType } = this.props
     subscribeByType({ limit: 1, type: ItemTypes.Feed })
+
+    this.interval = setInterval(this.intervalTick, 30 * 1000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval)
+  }
+
+  intervalTick = () => {
+    this.setState({
+      time: new Date().getTime(),
+    })
   }
 
   getTimeOfLatestFeed = (): number => {
@@ -76,6 +92,7 @@ class Summary extends React.Component<Props, {}> {
   }
 
   render() {
+    const { time } = this.state
     const timeOfLatestFeed = this.getTimeOfLatestFeed()
     const showFeedWarning =
       differenceInHours(timeOfLatestFeed, new Date().getTime()) <=
@@ -86,7 +103,7 @@ class Summary extends React.Component<Props, {}> {
     }
 
     return (
-      <Wrapper>
+      <Wrapper key={time}>
         {showFeedWarning ? (
           <PriorityIcon color="error" fontSize="large" />
         ) : (
