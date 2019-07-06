@@ -15,7 +15,6 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { isSameDay } from 'date-fns'
 import { RouteComponentProps, withRouter } from 'react-router-dom'
 import { getDateFromLocation } from './utils'
-import { askForPermissionToReceiveNotifications } from './components/push-notification'
 
 function TransitionUp<P>(props: P) {
   return <Slide direction="up" {...props} />

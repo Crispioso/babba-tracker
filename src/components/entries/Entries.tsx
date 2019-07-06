@@ -45,6 +45,7 @@ class Entries extends React.Component<Props, {}> {
     const localDate = convertToLocalTime(date, { timeZone: 'Europe/London' })
     return format(localDate, dateFormat)
   }
+
   render() {
     const {
       nappies,

@@ -43,8 +43,8 @@ const TypeIconWrapper = styled.span`
   font-size: ${(props: { isDouble?: boolean }) =>
     props.isDouble ? '0.5rem' : '1rem'};
   margin-right: 1rem;
-  padding-top: ${(props: { isDouble?: boolean }) =>
-    props.isDouble ? '8px' : '2px'};
+  display: flex;
+  align-items: center;
 `
 
 class Entry extends React.Component<Props, {}> {
@@ -139,8 +139,6 @@ class Entry extends React.Component<Props, {}> {
   render() {
     const { item, expanded, onClick, onEdit, onRemove } = this.props
 
-    console.log()
-
     return (
       <ExpansionPanel expanded={expanded} onChange={() => onClick(item.id)}>
         <ExpansionPanelSummary
@@ -149,7 +147,15 @@ class Entry extends React.Component<Props, {}> {
           id={`header-${item.id}`}
         >
           {this.renderTypeIcon(item)}
-          <Typography>{this.renderTitle(item)}</Typography>
+          <div>
+            <Typography variant="body1">{this.renderTitle(item)}</Typography>
+            <Typography
+              variant="body2"
+              style={{ paddingTop: '2px', color: 'rgba(0, 0, 0, 0.54)' }}
+            >
+              {this.renderEntryDate(item)}
+            </Typography>
+          </div>
           {item.note !== undefined && item.note !== '' && (
             <Chip label="note" size="small" style={{ marginLeft: '1rem' }} />
           )}
