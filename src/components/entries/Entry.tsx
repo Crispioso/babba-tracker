@@ -42,7 +42,7 @@ const ButtonWrapper = styled.div`
 const TypeIconWrapper = styled.span`
   font-size: ${(props: { isDouble?: boolean }) =>
     props.isDouble ? '0.5rem' : '1.3rem'};
-  margin-right: 1rem;
+  margin-right: 24px;
   display: flex;
   align-items: center;
 `
