@@ -59,7 +59,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
   return class ConnectFirebaseToComponent extends React.Component<
     TChildComponentProps,
     State
-  > {
+    > {
     state: State = {
       feeds: Firebase.getFeeds(),
       nappies: Firebase.getNappies(),
@@ -200,6 +200,7 @@ const wrapWithFirebaseComponent = () => <TChildComponentProps extends {}>(
       note: doc.note,
       time: doc.time != null ? doc.time : undefined,
       lastEdit: doc.lastEdit !== undefined ? doc.lastEdit : undefined,
+      includesGripeWater: doc.includesGripeWater !== undefined ? doc.includesGripeWater : false,
     })
 
     mapEventNappyDataToItem = (

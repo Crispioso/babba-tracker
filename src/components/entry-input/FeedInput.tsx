@@ -9,7 +9,6 @@ import {
   Input,
   FormControl,
   Checkbox,
-  FormGroup,
   FormControlLabel,
   InputLabel,
   TextField,
@@ -66,7 +65,7 @@ class FeedInput extends React.Component<Props, State> {
     event.preventDefault()
 
     const { item, updateEntry, addEntry, onFinish } = this.props
-    const { amount, unit, note, time } = this.state
+    const { amount, unit, note, time, includesGripeWater } = this.state
 
     if (!amount) {
       this.setState({ error: 'Must add an amount' })
@@ -82,6 +81,7 @@ class FeedInput extends React.Component<Props, State> {
         id: uuid(),
         time: time || new Date().getTime(),
         archived: false,
+        includesGripeWater,
       })
       onFinish()
       return
@@ -98,6 +98,7 @@ class FeedInput extends React.Component<Props, State> {
       unit,
       note,
       time: time || new Date().getTime(),
+      includesGripeWater,
     })
     onFinish()
   }
@@ -215,7 +216,7 @@ class FeedInput extends React.Component<Props, State> {
             value={note}
             onChange={this.handleNoteChange}
           />
-           <FormControlLabel
+          <FormControlLabel
             control={
               <Checkbox
                 checked={includesGripeWater}

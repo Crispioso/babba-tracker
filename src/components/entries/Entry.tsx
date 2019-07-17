@@ -73,7 +73,7 @@ class Entry extends React.Component<Props, {}> {
       case ItemTypes.Nappy: {
         return `Did a ${item.isWee ? 'wee' : ''}${
           item.isWee && item.isPoop ? ' and a ' : ''
-        }${item.isPoop ? 'poop' : ''}`
+          }${item.isPoop ? 'poop' : ''}`
       }
       case ItemTypes.Sleep: {
         return this.renderSleepingTitle(item)
@@ -158,6 +158,9 @@ class Entry extends React.Component<Props, {}> {
           </div>
           {item.note !== undefined && item.note !== '' && (
             <Chip label="note" size="small" style={{ marginLeft: '1rem' }} />
+          )}
+          {item.type === ItemTypes.Feed && item.includesGripeWater !== undefined && item.includesGripeWater && (
+            <Chip label="gripe water" color="secondary" size="small" style={{ marginLeft: '1rem' }} />
           )}
         </ExpansionPanelSummary>
         {item.note !== undefined && item.note !== '' && (
