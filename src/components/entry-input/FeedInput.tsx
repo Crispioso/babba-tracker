@@ -8,6 +8,9 @@ import uuid from 'uuid/v4'
 import {
   Input,
   FormControl,
+  Checkbox,
+  FormGroup,
+  FormControlLabel,
   InputLabel,
   TextField,
   Button,
@@ -38,6 +41,7 @@ type State = {
   note?: string
   time?: number
   error?: string
+  includesGripeWater?: boolean
 }
 
 const defaultState: State = {
@@ -45,6 +49,7 @@ const defaultState: State = {
   unit: Units.FluidOz,
   note: '',
   time: undefined,
+  includesGripeWater: false,
 }
 
 class FeedInput extends React.Component<Props, State> {
@@ -139,8 +144,14 @@ class FeedInput extends React.Component<Props, State> {
     this.setState({ note: value })
   }
 
+  handleGripeWaterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = event.currentTarget
+
+    this.setState({ includesGripeWater: checked })
+  }
+
   render() {
-    const { amount, unit, note, time, error } = this.state
+    const { amount, unit, note, time, error, includesGripeWater } = this.state
 
     const editableTime = time || new Date().getTime()
 
@@ -203,6 +214,17 @@ class FeedInput extends React.Component<Props, State> {
             rowsMax="4"
             value={note}
             onChange={this.handleNoteChange}
+          />
+           <FormControlLabel
+            control={
+              <Checkbox
+                checked={includesGripeWater}
+                onChange={this.handleGripeWaterChange}
+                id="includes-gripe-water-input"
+                value={includesGripeWater}
+              />
+            }
+            label="Includes gripe water"
           />
         </StyledFormControl>
         <div>

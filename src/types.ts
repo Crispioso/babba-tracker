@@ -28,6 +28,7 @@ export interface Feed extends Item {
   type: ItemTypes.Feed
   amount: string
   unit: Units
+  includesGripeWater?: boolean
 }
 
 export interface Nappy extends Item {
