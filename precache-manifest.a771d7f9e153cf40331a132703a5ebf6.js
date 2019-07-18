@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "cb60f812b69753e985560dc41b8c49fb",
+    "revision": "f368bd261fcbe013ef9db5c271723241",
     "url": "/babba-tracker/index.html"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/babba-tracker/static/js/2.8794c1f1.chunk.js"
   },
   {
-    "revision": "0e18e7ea01176f83d826",
-    "url": "/babba-tracker/static/js/main.a71f3bae.chunk.js"
+    "revision": "3c3d019ceb63c5c39480",
+    "url": "/babba-tracker/static/js/main.f6a2b22b.chunk.js"
   },
   {
     "revision": "6ac7fd4a787b5a32c6de",
