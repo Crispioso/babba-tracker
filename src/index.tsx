@@ -10,6 +10,8 @@ import blueGrey from '@material-ui/core/colors/blueGrey'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { MuiPickersUtilsProvider } from 'material-ui-pickers'
 import DateFnsUtils from '@date-io/date-fns'
+import { askForPermissionToReceiveNotifications } from './components/push-notification'
+import { firebaseMessaging } from './components/firebase/Firebase'
 
 const theme = createMuiTheme({
   palette: {

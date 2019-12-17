@@ -55,6 +55,10 @@ class Firebase {
       return
     }
 
+    firebaseMessaging.onMessage(payload => {
+      console.log('Message received. ', payload)
+    })
+
     // Do anything with Firebase that I want to be available before anything tries to use this Firebase class
     this.isInitialised = true
     return { feeds: this.feeds, nappies: this.nappies, sleeps: this.sleeps }

@@ -6,7 +6,7 @@ import EntriesController from './components/entries/EntriesController'
 import EntryInput from './components/entry-input/EntryInput'
 import { Items } from './types'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
-import { firebase, firebaseAuth } from './components/firebase/Firebase'
+import { firebase, firebaseAuth, firebaseMessaging } from './components/firebase/Firebase'
 import Dialog from '@material-ui/core/Dialog'
 import Slide from '@material-ui/core/Slide'
 import Fab from '@material-ui/core/Fab'
@@ -84,6 +84,10 @@ class App extends React.Component<Props, State> {
     this.unregisterAuthObserver = firebaseAuth.onAuthStateChanged(user =>
       this.setState({ isSignedIn: !!user, isInitialisingFirebase: false }),
     )
+  }
+
+  componentDidMount = () => {
+    firebaseMessaging.usePublicVapidKey('BHwoC8ZQ4t56ukmTc6vag6sMF0TqlutOIFRuCaL1Q5Eid7hj8oaiA_hb6Sw7hzC5h40lx6Con0x2bNDR33pRAsI')
   }
 
   componentWillReceiveProps(nextProps: Props) {

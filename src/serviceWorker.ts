@@ -10,17 +10,19 @@
 // To learn more about the benefits of this model and instructions on how to
 // opt-in, read http://bit.ly/CRA-PWA
 
-import { firebaseMessaging } from './components/firebase/Firebase'
+// import firebase from 'firebase'
+// import 'firebase/messaging'
+
 import { askForPermissionToReceiveNotifications } from './components/push-notification'
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
-    // [::1] is the IPv6 localhost address.
-    window.location.hostname === '[::1]' ||
-    // 127.0.0.1/8 is considered localhost for IPv4.
-    window.location.hostname.match(
-      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/,
-    ),
+  // [::1] is the IPv6 localhost address.
+  window.location.hostname === '[::1]' ||
+  // 127.0.0.1/8 is considered localhost for IPv4.
+  window.location.hostname.match(
+    /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/,
+  ),
 )
 
 type Config = {
@@ -29,7 +31,8 @@ type Config = {
 }
 
 export function register(config?: Config) {
-  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+  // if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+  if ('serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(
       (process as { env: { [key: string]: string } }).env.PUBLIC_URL,
@@ -45,31 +48,56 @@ export function register(config?: Config) {
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`
 
-      if (isLocalhost) {
-        // This is running on localhost. Let's check if a service worker still exists or not.
-        checkValidServiceWorker(swUrl, config)
+      // if (isLocalhost) {
+      //   // This is running on localhost. Let's check if a service worker still exists or not.
+      //   checkValidServiceWorker(swUrl, config)
 
-        // Add some additional logging to localhost, pointing developers to the
-        // service worker/PWA documentation.
-        navigator.serviceWorker.ready.then(() => {
-          console.log(
-            'This web app is being served cache-first by a service ' +
-              'worker. To learn more, visit http://bit.ly/CRA-PWA',
-          )
-        })
-      } else {
-        // Is not localhost. Just register service worker
-        registerValidSW(swUrl, config)
-      }
+      //   // Add some additional logging to localhost, pointing developers to the
+      //   // service worker/PWA documentation.
+      //   navigator.serviceWorker.ready.then(() => {
+      //     console.log(
+      //       'This web app is being served cache-first by a service ' +
+      //         'worker. To learn more, visit http://bit.ly/CRA-PWA',
+      //     )
+      //   })
+      // } else {
+      // Is not localhost. Just register service worker
+      registerValidSW(swUrl, config)
+      // }
     })
   }
 }
+
+// const fbMessaging = firebase.messaging()
+
+// fbMessaging.getToken().then((token) => {
+//   console.log(token)
+// })
+
+// fbMessaging.setBackgroundMessageHandler(payload => {
+//   console.log(
+//     '[firebase-messaging-sw.js] Received background message ',
+//     payload,
+//   )
+//   // Customize notification here
+//   const notificationTitle = 'Background Message Title'
+//   const notificationOptions = {
+//     body: 'Background Message body.',
+//     icon: 'https://crispioso.github.io/babba-tracker/babba-512.png',
+//   }
+
+//   // @ts-ignore
+//   return window.self.registration.showNotification(
+//     notificationTitle,
+//     notificationOptions,
+//   )
+// })
 
 function registerValidSW(swUrl: string, config?: Config) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
-      firebaseMessaging.useServiceWorker(registration)
+      // fbMessaging.useServiceWorker(registration)
       askForPermissionToReceiveNotifications()
 
       registration.onupdatefound = () => {
@@ -85,7 +113,7 @@ function registerValidSW(swUrl: string, config?: Config) {
               // content until all client tabs are closed.
               console.log(
                 'New content is available and will be used when all ' +
-                  'tabs for this page are closed. See http://bit.ly/CRA-PWA.',
+                'tabs for this page are closed. See http://bit.ly/CRA-PWA.',
               )
 
               // Execute callback
